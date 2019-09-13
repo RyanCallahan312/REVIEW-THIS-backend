@@ -1,0 +1,28 @@
+{
+    "commentId": { "type": "integer" },
+    "userId": { "type": "integer" },
+    "time": { "type": "string", "format": "date-time" },
+    "body": { "type": "string" },
+    "author": { "type": "string" },
+    "modifications": {
+        "type": "array",
+        "items": {
+            "type": "object",
+            "properties": {
+                "time": { "type": "string", "format": "date-time" },
+                "body": { "type": "string" }
+            }
+        }
+    },
+    "replies": { "type": "array", "items": { "type": "integer" } },
+    "parent": {
+        "type": "object",
+        "properties": {
+            "parentType": {
+                "type": "string",
+                "pattern": "^(REVIEW)|(COMMENT)$"
+            },
+            "id": { "type": "integer" }
+        }
+    }
+}

@@ -1,0 +1,19 @@
+{
+    "id": { "type": "integer" },
+    "created": { "type": "string", "format": "date-time" },
+    "reviews": { "type": "array", "items": { "type": "integer" } },
+    "following": { "type": "array", "items": { "type": "integer" } },
+    "comments": { "type": "array", "items": { "type": "integer" } },
+    "bio": { "type": "string" },
+    "socials": {
+        "type": "object",
+        "properties": {
+            "facebook": { "type": "string" },
+            "twitter": { "type": "string" },
+            "instagram": { "type": "string" }
+        }
+    },
+    "avatar": { "type": "string" },
+    "name": { "type": "string" },
+    "deleted": { "type": "boolean" }
+}

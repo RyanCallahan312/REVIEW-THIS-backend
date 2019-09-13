@@ -1,0 +1,36 @@
+{
+    "reviewId": { "type": "integer" },
+    "userId": { "type": "integer" },
+    "time": { "type": "string", "format": "date-time" },
+    "movie": { "type": "string" },
+    "genre": { "type": "string" },
+    "rating": { "type": "float" },
+    "headline": { "type": "string" },
+    "sections": {
+        "type": "object",
+        "properties": {
+            "header": { "type": "string" },
+            "body": { "type": "string" }
+        }
+    },
+    "modifications": {
+        "type": "array",
+        "items": {
+            "type": "object",
+            "properties": {
+                "time": { "type": "string", "format": "date-time" },
+                "headline": { "type": "string" },
+                "sections": {
+                    "type": "object",
+                    "properties": {
+                        "header": { "type": "string" },
+                        "body": { "type": "string" }
+                    }
+                },
+                "rating": { "type": "float" }
+            }
+        }
+    },
+    "deleted": { "type": "boolean" },
+    "comments": { "type": "array", "items": { "type": "integer" } }
+}
