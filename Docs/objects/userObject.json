@@ -1,5 +1,5 @@
 {
-    "id": { "type": "integer" },
+    "id": { "type": "string" },
     "created": { "type": "string", "format": "date-time" },
     "reviews": { "type": "array", "items": { "type": "integer" } },
     "following": { "type": "array", "items": { "type": "integer" } },

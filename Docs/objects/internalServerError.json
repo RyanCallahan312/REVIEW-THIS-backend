@@ -1,0 +1,5 @@
+{
+    "message": {"type": "string"},
+    "errorCode": {"type": "string"},
+    "trace": {"type": "string"}
+}

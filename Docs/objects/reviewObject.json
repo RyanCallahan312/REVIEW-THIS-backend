@@ -1,6 +1,6 @@
 {
-    "reviewId": { "type": "integer" },
-    "userId": { "type": "integer" },
+    "reviewId": { "type": "string" },
+    "userId": { "type": "string" },
     "time": { "type": "string", "format": "date-time" },
     "movie": { "type": "string" },
     "genre": { "type": "string" },
@@ -32,5 +32,5 @@
         }
     },
     "deleted": { "type": "boolean" },
-    "comments": { "type": "array", "items": { "type": "integer" } }
+    "comments": { "type": "array", "items": { "type": "string" } }
 }

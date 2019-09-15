@@ -1,0 +1,4 @@
+{
+    "page": {"type": "integer"},
+    "items": {"type": "integer"}
+}

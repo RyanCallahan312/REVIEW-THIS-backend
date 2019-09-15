@@ -1,6 +1,6 @@
 {
-    "commentId": { "type": "integer" },
-    "userId": { "type": "integer" },
+    "commentId": { "type": "string" },
+    "userId": { "type": "string" },
     "time": { "type": "string", "format": "date-time" },
     "body": { "type": "string" },
     "author": { "type": "string" },
@@ -14,7 +14,7 @@
             }
         }
     },
-    "replies": { "type": "array", "items": { "type": "integer" } },
+    "replies": { "type": "array", "items": { "type": "string" } },
     "parent": {
         "type": "object",
         "properties": {
@@ -22,7 +22,7 @@
                 "type": "string",
                 "pattern": "^(REVIEW)|(COMMENT)$"
             },
-            "id": { "type": "integer" }
+            "id": { "type": "string" }
         }
     }
 }
