@@ -1,0 +1,4 @@
+{
+    "message": { "type": "string" },
+    "reviewId": { "type": "string" }
+}
