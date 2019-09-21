@@ -1,0 +1,70 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "User Api",
+        "description": "A comment microservice api to be used in conjunction with other user, review, and auth microservices.",
+        "version": "0.1.0"
+    },
+    "servers": [
+        {
+            "url": "https://localhost:43081",
+            "description": "dev local url"
+        }
+    ],
+    "paths": {},
+    "components": {
+        "schemas": {
+            "comment": {
+                "commentId": {
+                    "type": "integer"
+                },
+                "userId": {
+                    "type": "integer"
+                },
+                "time": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "body": {
+                    "type": "string"
+                },
+                "author": {
+                    "type": "string"
+                },
+                "modifications": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "time": {
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            "body": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "replies": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "parent": {
+                    "type": "object",
+                    "properties": {
+                        "parentType": {
+                            "type": "string",
+                            "pattern": "^(REVIEW)|(COMMENT)$"
+                        },
+                        "id": {
+                            "type": "integer"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,72 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "User Api",
+        "description": "A user microservice api to be used in conjunction with other comment, review, and auth microservices.",
+        "version": "0.1.0"
+    },
+    "servers": [
+        {
+            "url": "https://localhost:43081",
+            "description": "dev local url"
+        }
+    ],
+    "paths": {},
+    "components": {
+        "schemas": {
+            "user": {
+                "id": {
+                    "type": "integer"
+                },
+                "created": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "reviews": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "following": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "comments": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "bio": {
+                    "type": "string"
+                },
+                "socials": {
+                    "type": "object",
+                    "properties": {
+                        "facebook": {
+                            "type": "string"
+                        },
+                        "twitter": {
+                            "type": "string"
+                        },
+                        "instagram": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "avatar": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "deleted": {
+                    "type": "boolean"
+                }
+            }
+        }
+    }
+}
