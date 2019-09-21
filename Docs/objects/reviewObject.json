@@ -32,6 +32,16 @@
             }
         }
     },
-    "deleted": { "type": "boolean" },
+    "deletions": {
+        "type": "array",
+        "items": {
+            "type": "object",
+            "properties": {
+                "deleted": { "type": "boolean" },
+                "user": { "type": "string" },
+                "time": { "type": "string", "format": "date-time" }
+            }
+        }
+    },
     "comments": { "type": "array", "items": { "type": "string" } }
 }

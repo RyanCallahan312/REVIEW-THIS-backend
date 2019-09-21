@@ -6,6 +6,5 @@
     "movie": { "type": "string" },
     "genre": { "type": "string" },
     "rating": { "type": "float" },
-    "headline": { "type": "string" },
-    "deleted": { "type": "boolean" }
+    "headline": { "type": "string" }
 }
