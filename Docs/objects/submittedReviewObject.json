@@ -8,10 +8,13 @@
     "rating": { "type": "float" },
     "headline": { "type": "string" },
     "sections": {
-        "type": "object",
-        "properties": {
-            "header": { "type": "string" },
-            "body": { "type": "string" }
+        "type": "aray",
+        "items": {
+            "type": "object",
+            "properties": {
+                "header": { "type": "string" },
+                "body": { "type": "string" }
+            }
         }
     }
 }

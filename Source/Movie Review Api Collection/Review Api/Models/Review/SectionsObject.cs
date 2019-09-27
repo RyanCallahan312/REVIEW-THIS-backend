@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Review_Api.models
+namespace Review_Api.Models
 {
     public class SectionsObject
     {
-        public string header;
-        public string body;
+        public string Header { get; set; }
+        public string Body { get; set; }
     }
 }

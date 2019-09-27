@@ -8,10 +8,13 @@
     "rating": { "type": "float" },
     "headline": { "type": "string" },
     "sections": {
-        "type": "object",
-        "properties": {
-            "header": { "type": "string" },
-            "body": { "type": "string" }
+        "type": "array",
+        "items": {
+            "type": "object",
+            "properties": {
+                "header": { "type": "string" },
+                "body": { "type": "string" }
+            }
         }
     },
     "modifications": {
@@ -22,10 +25,13 @@
                 "time": { "type": "string", "format": "date-time" },
                 "headline": { "type": "string" },
                 "sections": {
-                    "type": "object",
-                    "properties": {
-                        "header": { "type": "string" },
-                        "body": { "type": "string" }
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "header": { "type": "string" },
+                            "body": { "type": "string" }
+                        }
                     }
                 },
                 "rating": { "type": "float" }
