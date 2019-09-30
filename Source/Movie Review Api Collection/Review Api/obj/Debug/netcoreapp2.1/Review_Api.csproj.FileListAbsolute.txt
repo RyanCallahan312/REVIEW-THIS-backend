@@ -1,0 +1,14 @@
+D:\Personal Docuemnts\GITHUB\movie-review-backend\Source\Movie Review Api Collection\Review Api\bin\Debug\netcoreapp2.1\Review_Api.deps.json
+D:\Personal Docuemnts\GITHUB\movie-review-backend\Source\Movie Review Api Collection\Review Api\bin\Debug\netcoreapp2.1\Review_Api.runtimeconfig.json
+D:\Personal Docuemnts\GITHUB\movie-review-backend\Source\Movie Review Api Collection\Review Api\bin\Debug\netcoreapp2.1\Review_Api.runtimeconfig.dev.json
+D:\Personal Docuemnts\GITHUB\movie-review-backend\Source\Movie Review Api Collection\Review Api\bin\Debug\netcoreapp2.1\Review_Api.dll
+D:\Personal Docuemnts\GITHUB\movie-review-backend\Source\Movie Review Api Collection\Review Api\obj\Debug\netcoreapp2.1\Review_Api.csprojAssemblyReference.cache
+D:\Personal Docuemnts\GITHUB\movie-review-backend\Source\Movie Review Api Collection\Review Api\obj\Debug\netcoreapp2.1\Review_Api.csproj.CoreCompileInputs.cache
+D:\Personal Docuemnts\GITHUB\movie-review-backend\Source\Movie Review Api Collection\Review Api\obj\Debug\netcoreapp2.1\Review_Api.RazorAssemblyInfo.cache
+D:\Personal Docuemnts\GITHUB\movie-review-backend\Source\Movie Review Api Collection\Review Api\obj\Debug\netcoreapp2.1\Review_Api.RazorAssemblyInfo.cs
+D:\Personal Docuemnts\GITHUB\movie-review-backend\Source\Movie Review Api Collection\Review Api\obj\Debug\netcoreapp2.1\Review_Api.AssemblyInfoInputs.cache
+D:\Personal Docuemnts\GITHUB\movie-review-backend\Source\Movie Review Api Collection\Review Api\obj\Debug\netcoreapp2.1\Review_Api.AssemblyInfo.cs
+D:\Personal Docuemnts\GITHUB\movie-review-backend\Source\Movie Review Api Collection\Review Api\obj\Debug\netcoreapp2.1\Review_Api.RazorTargetAssemblyInfo.cache
+D:\Personal Docuemnts\GITHUB\movie-review-backend\Source\Movie Review Api Collection\Review Api\bin\Debug\netcoreapp2.1\Review_Api.pdb
+D:\Personal Docuemnts\GITHUB\movie-review-backend\Source\Movie Review Api Collection\Review Api\obj\Debug\netcoreapp2.1\Review_Api.dll
+D:\Personal Docuemnts\GITHUB\movie-review-backend\Source\Movie Review Api Collection\Review Api\obj\Debug\netcoreapp2.1\Review_Api.pdb
