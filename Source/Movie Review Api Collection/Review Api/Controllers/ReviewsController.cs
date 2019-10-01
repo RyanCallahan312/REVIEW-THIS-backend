@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
 
 namespace Review_Api.Controllers
@@ -21,7 +22,8 @@ namespace Review_Api.Controllers
         {
             var records = db.LoadRecords<Tester>("TestTable");
             string str = "";
-            foreach(Tester record in records){
+            foreach (Tester record in records)
+            {
                 str += record.TestString + "\n";
             }
             return str;
@@ -39,7 +41,7 @@ namespace Review_Api.Controllers
         public string Post([FromBody] Tester value)
         {
             this.db.InsertRecord("TestTable", value);
-            return $"posted {value}";
+            return $"posted {value.TestString}";
         }
 
         // PUT: api/Reviews/5
@@ -86,7 +88,9 @@ namespace Review_Api.Controllers
     }
     public class Tester
     {
-        public ObjectId _id { get; set; }
+        [BsonId]
+        public Guid _id { get; set; }
+
         public string TestString { get; set; }
 
         public Tester(string testString)
