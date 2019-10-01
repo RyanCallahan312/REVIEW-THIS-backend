@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
+using Newtonsoft.Json;
 
 namespace Review_Api.Controllers
 {
@@ -18,50 +19,45 @@ namespace Review_Api.Controllers
         private MongoCRUD db = new MongoCRUD("MovieTest");
         // GET: api/Reviews
         [HttpGet]
-        public string Get()
+        public JsonResult Get()
         {
-            var records = db.LoadRecords<Tester>("TestTable");
-            string str = "";
-            foreach (Tester record in records)
-            {
-                str += record.TestString + "\n";
-            }
-            return str;
+            List<Tester> records = db.LoadRecords<Tester>("TestTable");
+            return new JsonResult(records);
         }
 
         // GET: api/Reviews/5
         [HttpGet("{id}", Name = "Get")]
         public string Get(int id)
         {
-            return $"value {id}";
+            return new JsonResult($"value {id}");
         }
 
         // POST: api/Reviews
         [HttpPost]
-        public string Post([FromBody] Tester value)
+        public JsonResult Post([FromBody] Tester value)
         {
             this.db.InsertRecord("TestTable", value);
-            return $"posted {value.TestString}";
+            return new JsonResult($"posted {value.TestString}");
         }
 
         // PUT: api/Reviews/5
         [HttpPut("{id}")]
-        public string Put(int id, [FromBody] string value)
+        public JsonResult Put(int id, [FromBody] string value)
         {
-            return $"value {value} + {id}";
+            return new JsonResult($"value {value} + {id}");
         }
 
         // DELETE: api/ApiWithActions/5
         [HttpDelete("{id}")]
-        public string Delete(int id)
+        public JsonResult Delete(int id)
         {
-            return $"value {id}";
+            return new JsonResult($"value {id}");
         }
         // DELETE: api/ApiWithActions/5
         [HttpPatch("{id}")]
-        public string Patch(int id)
+        public JsonResult Patch(int id)
         {
-            return $"value {id}";
+            return new JsonResult($"value {id}");
         }
     }
 
