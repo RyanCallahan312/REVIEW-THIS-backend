@@ -7,7 +7,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Review_Api.Models
 {
-    public class ModificationsObject
+    public class Modification
     {
         [BsonId]
         public Guid Id { get; }
@@ -16,11 +16,11 @@ namespace Review_Api.Models
         [BsonRequired]
         public string Headline { get; set; }
         [BsonRequired]
-        public List<SectionsObject> Sections { get; set; }
+        public List<Section> Sections { get; set; }
         [BsonRequired]
         public float Rating { get; set; }
 
-        public ModificationsObject(DateTime time, string headline, List<SectionsObject> sections, float rating)
+        public Modification(DateTime time, string headline, List<Section> sections, float rating)
         {
             Time = time;
             Headline = headline;

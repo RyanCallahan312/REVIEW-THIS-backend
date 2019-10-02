@@ -7,7 +7,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Review_Api.Models
 {
-    public class DeletionsObject
+    public class Deletion
     {
         [BsonId]
         public Guid Id { get; }
@@ -18,7 +18,7 @@ namespace Review_Api.Models
         [BsonRequired]
         public DateTime Time { get; set; }
 
-        public DeletionsObject(bool deleted, string user, DateTime time)
+        public Deletion(bool deleted, string user, DateTime time)
         {
             Deleted = deleted;
             User = user;

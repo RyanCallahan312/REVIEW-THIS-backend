@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace Review_Api.Models.Review
+namespace Review_Api.Models
 {
     public class SubmittedReview
     {
@@ -24,9 +24,9 @@ namespace Review_Api.Models.Review
         [BsonRequired]
         public string Headline { get; set; }
         [BsonRequired]
-        public List<SectionsObject> Sections { get; set; }
+        public List<Section> Sections { get; set; }
 
-        public SubmittedReview(string reviewId, string userId, string movie, string genre, float rating, string headline, List<SectionsObject> sections)
+        public SubmittedReview(string reviewId, string userId, string movie, string genre, float rating, string headline, List<Section> sections)
         {
             ReviewId = reviewId;
             UserId = userId;

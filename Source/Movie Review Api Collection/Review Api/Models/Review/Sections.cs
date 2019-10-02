@@ -7,7 +7,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Review_Api.Models
 {
-    public class SectionsObject
+    public class Section
     {
         [BsonId]
         public Guid Id { get; }
@@ -16,7 +16,7 @@ namespace Review_Api.Models
         [BsonRequired]
         public string Body { get; set; }
 
-        public SectionsObject(string header, string body)
+        public Section(string header, string body)
         {
             Header = header;
             Body = body;

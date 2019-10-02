@@ -9,7 +9,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Review_Api.Models
 {
-    public class ReviewObject
+    public class Review
     {
         [BsonId]
         public Guid Id { get; }
@@ -28,15 +28,15 @@ namespace Review_Api.Models
         [BsonRequired]
         public string Headline { get; set; }
         [BsonRequired]
-        public List<SectionsObject> Sections { get; set; }
+        public List<Section> Sections { get; set; }
         [BsonRequired]
-        public List<ModificationsObject> Modifications { get; set; }
+        public List<Modification> Modifications { get; set; }
         [BsonRequired]
-        public List<DeletionsObject> Deletions { get; set; }
+        public List<Deletion> Deletions { get; set; }
         [BsonRequired]
         public List<string> Comments { get; set; }
 
-        public ReviewObject(string reviewId, string userId, DateTime time, string movie, string genre, float rating, string headline, List<SectionsObject> sections, List<ModificationsObject> modifications, List<DeletionsObject> deletions, List<string> comments)
+        public Review(string reviewId, string userId, DateTime time, string movie, string genre, float rating, string headline, List<Section> sections, List<Modification> modifications, List<Deletion> deletions, List<string> comments)
         {
             ReviewId = reviewId;
             UserId = userId;

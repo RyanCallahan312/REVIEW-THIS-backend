@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace Review_Api.Models.Review
+namespace Review_Api.Models
 {
     public class PartialReview
     {

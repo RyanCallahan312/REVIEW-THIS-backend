@@ -8,6 +8,8 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
 using Newtonsoft.Json;
+using Review_Api.Models.Response;
+using Review_Api.ModelFactory;
 
 namespace Review_Api.Controllers
 {
@@ -27,9 +29,18 @@ namespace Review_Api.Controllers
 
         // GET: api/Reviews/5
         [HttpGet("{id}", Name = "Get")]
-        public string Get(int id)
+        public JsonResult Get(string id)
         {
-            return new JsonResult($"value {id}");
+            if (!Guid.TryParse(id, out Guid parsedId))
+            {
+                return new JsonResult(FailureFact.BadId());
+            }
+            Tester record = db.FindRecordById<Tester>("TestTable", parsedId);
+            if(record == null)
+            {
+                return new JsonResult(FailureFact.IdNotFound());
+            }
+            return new JsonResult(record);
         }
 
         // POST: api/Reviews
@@ -42,7 +53,7 @@ namespace Review_Api.Controllers
 
         // PUT: api/Reviews/5
         [HttpPut("{id}")]
-        public JsonResult Put(int id, [FromBody] string value)
+        public JsonResult Put(Guid id, [FromBody] string value)
         {
             return new JsonResult($"value {value} + {id}");
         }
@@ -80,6 +91,13 @@ namespace Review_Api.Controllers
         {
             var collection = db.GetCollection<T>(table);
             return collection.Find(new BsonDocument()).ToList();
+        }
+
+        public T FindRecordById<T>(string table, Guid Id)
+        {
+            var collection = db.GetCollection<T>(table);
+            var filter = Builders<T>.Filter.Eq("_id", Id);
+            return collection.Find(filter).FirstOrDefault();
         }
     }
     public class Tester
