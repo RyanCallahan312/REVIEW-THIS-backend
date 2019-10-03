@@ -34,9 +34,9 @@ namespace Review_Api.Models
         [BsonRequired]
         public List<Deletion> Deletions { get; set; }
         [BsonRequired]
-        public List<string> Comments { get; set; }
+        public List<Guid> Comments { get; set; }
 
-        public Review(string reviewId, string userId, DateTime time, string movie, string genre, float rating, string headline, List<Section> sections, List<Modification> modifications, List<Deletion> deletions, List<string> comments)
+        public Review(string reviewId, string userId, DateTime time, string movie, string genre, float rating, string headline, List<Section> sections, List<Modification> modifications, List<Deletion> deletions, List<Guid> comments)
         {
             ReviewId = reviewId;
             UserId = userId;

@@ -10,6 +10,7 @@ using MongoDB.Driver;
 using Newtonsoft.Json;
 using Review_Api.Models.Response;
 using Review_Api.ModelFactory;
+using Review_Api.Database;
 
 namespace Review_Api.Controllers
 {
@@ -18,7 +19,7 @@ namespace Review_Api.Controllers
     [ApiController]
     public class ReviewsController : ControllerBase
     {
-        private MongoCRUD db = new MongoCRUD("MovieTest");
+        private ReviewDB db = new ReviewDB("MovieTest");
         // GET: api/Reviews
         [HttpGet]
         public JsonResult Get()
@@ -69,35 +70,6 @@ namespace Review_Api.Controllers
         public JsonResult Patch(int id)
         {
             return new JsonResult($"value {id}");
-        }
-    }
-
-    public class MongoCRUD
-    {
-        private IMongoDatabase db;
-
-        public MongoCRUD(string database)
-        {
-            var client = new MongoClient();
-            db = client.GetDatabase(database);
-        }
-        public void InsertRecord<T>(string table, T record)
-        {
-            var collection = db.GetCollection<T>(table);
-            collection.InsertOne(record);
-        }
-
-        public List<T> LoadRecords<T>(string table)
-        {
-            var collection = db.GetCollection<T>(table);
-            return collection.Find(new BsonDocument()).ToList();
-        }
-
-        public T FindRecordById<T>(string table, Guid Id)
-        {
-            var collection = db.GetCollection<T>(table);
-            var filter = Builders<T>.Filter.Eq("_id", Id);
-            return collection.Find(filter).FirstOrDefault();
         }
     }
     public class Tester
