@@ -9,5 +9,11 @@ namespace Review_Api.Models.Response
     {
         public string Message { get; set; }
         public string ErrorCode { get; set; }
+
+        public Unauthorized(string message, string errorCode)
+        {
+            Message = message;
+            ErrorCode = errorCode;
+        }
     }
 }

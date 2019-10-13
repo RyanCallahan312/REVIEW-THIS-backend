@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using Review_Api.Models.Response;
 using Review_Api.ModelFactory;
 using Review_Api.Database;
+using Review_Api.Models.Query;
 
 namespace Review_Api.Controllers
 {
@@ -22,9 +23,20 @@ namespace Review_Api.Controllers
         private ReviewDB db = new ReviewDB("MovieTest");
         // GET: api/Reviews
         [HttpGet]
-        public JsonResult Get()
+        public JsonResult Get([FromRoute] Sort sort,[FromRoute] Filter filters,[FromRoute] Page page)
         {
-            List<Tester> records = db.LoadRecords<Tester>("TestTable");
+            var print = sort.ToString() + filters.ToString() + page.ToString();
+            Console.WriteLine(print);
+            List<Tester> records;
+
+            try
+            {
+                records = db.LoadRecords<Tester>("TestTable");
+            }
+            catch
+            {
+                return new JsonResult(FailureFact.Default());
+            }
             return new JsonResult(records);
         }
 
@@ -37,7 +49,7 @@ namespace Review_Api.Controllers
                 return new JsonResult(FailureFact.BadId());
             }
             Tester record = db.FindRecordById<Tester>("TestTable", parsedId);
-            if(record == null)
+            if (record == null)
             {
                 return new JsonResult(FailureFact.IdNotFound());
             }

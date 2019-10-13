@@ -19,7 +19,7 @@
     },
     "Review_Api": {
       "commandName": "Project",
-      "launchBrowser": true,
+      "launchBrowser": false,
       "launchUrl": "api/reviews",
       "applicationUrl": "https://localhost:43080",
       "environmentVariables": {

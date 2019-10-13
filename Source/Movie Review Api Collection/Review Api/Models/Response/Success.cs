@@ -9,5 +9,11 @@ namespace Review_Api.Models.Response
     {
         public string Message { get; set; }
         public Guid ReviewId { get; set; }
+
+        public Success(string message, Guid reviewId)
+        {
+            Message = message;
+            ReviewId = reviewId;
+        }
     }
 }
