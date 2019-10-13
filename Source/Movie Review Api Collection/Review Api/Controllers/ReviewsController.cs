@@ -20,7 +20,7 @@ namespace Review_Api.Controllers
     [ApiController]
     public class ReviewsController : ControllerBase
     {
-        private ReviewDB db = new ReviewDB("MovieTest");
+        private readonly ReviewDB db = new ReviewDB("MovieTest");
         // GET: api/Reviews
         [HttpGet]
         public JsonResult Get([FromRoute] Sort sort,[FromRoute] Filter filters,[FromRoute] Page page)
@@ -87,7 +87,7 @@ namespace Review_Api.Controllers
     public class Tester
     {
         [BsonId]
-        public Guid _id { get; set; }
+        public Guid Id { get; set; }
 
         public string TestString { get; set; }
 
