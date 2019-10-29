@@ -8,10 +8,10 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
 using Newtonsoft.Json;
-using Review_Api.Models.Response;
 using Review_Api.ModelFactory;
 using Review_Api.Database;
 using Review_Api.Models.Query;
+using Review_Api.Util;
 
 namespace Review_Api.Controllers
 {
@@ -23,11 +23,12 @@ namespace Review_Api.Controllers
         private readonly ReviewDB db = new ReviewDB("MovieTest");
         // GET: api/Reviews
         [HttpGet]
-        public JsonResult Get([FromRoute] Sort sort,[FromRoute] Filter filters,[FromRoute] Page page)
+        public JsonResult Search([FromQuery(Name = "sortDirection")] String sortDirection, [FromQuery(Name = "sortField")] String sortField, [FromQuery(Name = "filterFields")] string[] filterFields, [FromQuery(Name = "filterValues")] string[] filterValues, [FromQuery(Name = "pageNumber")] int pageNumber, [FromQuery(Name = "pageItems")] int pageItems)
         {
-            var print = sort.ToString() + filters.ToString() + page.ToString();
-            Console.WriteLine(print);
+            Sort sort = new Sort(sortDirection, sortField);
+            List<Filter> filters = new List<Filter>();
             List<Tester> records;
+            //Console.WriteLine(sort.ToString(), string.Join(",", filters), page.ToString());
 
             try
             {
@@ -37,6 +38,9 @@ namespace Review_Api.Controllers
             {
                 return new JsonResult(FailureFact.Default());
             }
+
+            //records = Pager.Paginate(records, page.PageNumber, page.ItemsPerPage);
+
             return new JsonResult(records);
         }
 
@@ -82,6 +86,18 @@ namespace Review_Api.Controllers
         public JsonResult Patch(int id)
         {
             return new JsonResult($"value {id}");
+        }
+    }
+
+    public class Pager
+    {
+        public static List<T> Paginate<T>(List<T> content, int page, int items)
+        {
+            if (content.Count < page * items)
+            {
+                return new List<T>();
+            }
+            return content.Skip(page * items).Take(items).ToList();
         }
     }
     public class Tester

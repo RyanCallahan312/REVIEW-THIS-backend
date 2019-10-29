@@ -1,4 +1,4 @@
 {
-    "page": {"type": "integer"},
-    "items": {"type": "integer"}
+    "page": { "type": "integer" },
+    "items": { "type": "integer" }
 }
