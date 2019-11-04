@@ -6,26 +6,40 @@ using System.Threading.Tasks;
 
 namespace Review_Api.Util
 {
-    public class ParseQuery
+    public static class ParseQuery
     {
-        public Sort ParseSort(string sortDirection, string sortField)
+        public static Sort ParseSort(string sortDirection, string sortField)
         {
+            if (sortDirection == null || sortField == null)
+            {
+                return new Sort("asc", "time");
+            }
+
             return new Sort(sortDirection, sortField);
         }
 
-        public List<Filter> ParseFilters(string filterFields, string filterValues)
+        public static List<Filter> ParseFilters(string filterFields, string filterValues)
         {
+
             List<Filter> filters = new List<Filter>();
+
+            if (filterFields == null || filterValues == null)
+            {
+                return filters;
+            }
+
             List<string> values = filterValues.Split(',').ToList();
             List<string> fields = filterFields.Split(',').ToList();
+
             for (int i = 0; i < fields.Count; i++)
             {
                 filters.Add(new Filter(fields.ElementAt(i), values.ElementAt(i)));
             }
+
             return filters;
         }
 
-        public Page ParsePage(int pageNumber, int pageItems)
+        public static Page ParsePage(int pageNumber, int pageItems)
         {
             return new Page(pageNumber, pageItems);
         }

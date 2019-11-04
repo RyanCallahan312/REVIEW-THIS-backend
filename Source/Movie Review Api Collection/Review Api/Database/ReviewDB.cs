@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using Review_Api.Models.Query;
 
 namespace Review_Api.Database
 {
@@ -22,9 +23,20 @@ namespace Review_Api.Database
             collection.InsertOne(record);
         }
 
-        public List<T> LoadRecords<T>(string table)
+        public List<T> LoadRecords<T>(string table, List<Filter> filters)
         {
             var collection = db.GetCollection<T>(table);
+            if (filters != null)
+            {
+                var queryBuilder = Builders<T>.Filter;
+                var mongoFilters = queryBuilder.Eq(filters[0].field, filters[0].value);
+                foreach (Filter filter in filters)
+                {
+                    mongoFilters = mongoFilters | queryBuilder.Eq(filter.field, filter.value);
+                }
+
+                return collection.Find(mongoFilters).ToList();
+            }
             return collection.Find(new BsonDocument()).ToList();
         }
 

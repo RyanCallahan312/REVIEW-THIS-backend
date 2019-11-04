@@ -7,7 +7,7 @@
     },
     "servers": [
         {
-            "url": "https://localhost:43080",
+            "url": "https://localhost:43080/api",
             "description": "dev local url"
         }
     ],
@@ -19,28 +19,57 @@
                 "parameters": [
                     {
                         "in": "query",
-                        "name": "sort",
+                        "name": "sortDirection",
                         "required": false,
                         "schema": {
-                            "$ref": "#/components/schemas/sort"
+                            "type": "string"
                         },
                         "description": "describes the sort direction"
                     },
                     {
                         "in": "query",
-                        "name": "filters",
+                        "name": "sortField",
                         "required": false,
                         "schema": {
-                            "$ref": "#/components/schemas/filters"
-                        }
+                            "type": "string"
+                        },
+                        "description": "describes the sort field"
                     },
                     {
                         "in": "query",
-                        "name": "page",
-                        "required": true,
+                        "name": "filterFields",
+                        "required": false,
                         "schema": {
-                            "$ref": "#/components/schemas/pagination"
-                        }
+                            "type": "string"
+                        },
+                        "description": "describes the filter fields"
+                    },
+                    {
+                        "in": "query",
+                        "name": "filterValues",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "describes the filter values"
+                    },
+                    {
+                        "in": "query",
+                        "name": "pageNumber",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "describes the page number"
+                    },
+                    {
+                        "in": "query",
+                        "name": "pageItems",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "describes the items per page"
                     }
                 ],
                 "responses": {
@@ -87,12 +116,14 @@
                     "description": "the content of the new review and with user info",
                     "required": true,
                     "content": {
-                        "type": "object",
-                        "properties": {
-                            "userId": {
-                                "type": "string"
-                            },
-                            "$ref": "#/components/schemas/submittedReview"
+                        "application/json": {
+                            "type": "object",
+                            "properties": {
+                                "userId": {
+                                    "type": "string"
+                                },
+                                "$ref": "#/components/schemas/submittedReview"
+                            }
                         }
                     }
                 },
@@ -140,7 +171,7 @@
                         "name": "id",
                         "required": true,
                         "schema": {
-                            "$ref": "#/components/schemas/sort"
+                            "type": "string"
                         },
                         "description": "review id to get"
                     }
@@ -196,12 +227,14 @@
                     "description": "the user updating the review and the updated review",
                     "required": true,
                     "content": {
-                        "type": "object",
-                        "properties": {
-                            "userId": {
-                                "type": "string"
-                            },
-                            "$ref": "#/components/schemas/submittedReview"
+                        "application/json": {
+                            "type": "object",
+                            "properties": {
+                                "userId": {
+                                    "type": "string"
+                                },
+                                "$ref": "#/components/schemas/submittedReview"
+                            }
                         }
                     }
                 },
@@ -256,10 +289,12 @@
                     "description": "the user un-deleting the review",
                     "required": true,
                     "content": {
-                        "type": "object",
-                        "properties": {
-                            "userId": {
-                                "type": "string"
+                        "application/json": {
+                            "type": "object",
+                            "properties": {
+                                "userId": {
+                                    "type": "string"
+                                }
                             }
                         }
                     }
@@ -315,10 +350,12 @@
                     "description": "the user deleteing the review",
                     "required": true,
                     "content": {
-                        "type": "object",
-                        "properties": {
-                            "userId": {
-                                "type": "string"
+                        "application/json": {
+                            "type": "object",
+                            "properties": {
+                                "userId": {
+                                    "type": "string"
+                                }
                             }
                         }
                     }
@@ -515,11 +552,27 @@
             "filters": {
                 "type": "array",
                 "items": {
-                    "type": "string"
+                    "type": "object",
+                    "properties": {
+                        "field": {
+                            "type": "string"
+                        },
+                        "value": {
+                            "type": "string"
+                        }
+                    }
                 }
             },
             "sort": {
-                "type": "string"
+                "type": "Object",
+                "properties": {
+                    "direction": {
+                        "type": "string"
+                    },
+                    "field": {
+                        "type": "string"
+                    }
+                }
             },
             "pagination": {
                 "type": "object",
@@ -585,5 +638,8 @@
                 }
             }
         }
+    },
+    "examples": {
+        "review": {}
     }
 }

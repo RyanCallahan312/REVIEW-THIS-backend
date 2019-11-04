@@ -23,23 +23,26 @@ namespace Review_Api.Controllers
         private readonly ReviewDB db = new ReviewDB("MovieTest");
         // GET: api/Reviews
         [HttpGet]
-        public JsonResult Search([FromQuery(Name = "sortDirection")] String sortDirection, [FromQuery(Name = "sortField")] String sortField, [FromQuery(Name = "filterFields")] string[] filterFields, [FromQuery(Name = "filterValues")] string[] filterValues, [FromQuery(Name = "pageNumber")] int pageNumber, [FromQuery(Name = "pageItems")] int pageItems)
+        public JsonResult Search([FromQuery(Name = "sortDirection")] String sortDirection, [FromQuery(Name = "sortField")] String sortField, [FromQuery(Name = "filterFields")] string filterFields, [FromQuery(Name = "filterValues")] string filterValues, [FromQuery(Name = "pageNumber")] int pageNumber = 0, [FromQuery(Name = "pageItems")] int pageItems = -1)
         {
-            Sort sort = new Sort(sortDirection, sortField);
-            List<Filter> filters = new List<Filter>();
+            Sort sort = ParseQuery.ParseSort(sortDirection, sortField);
+            List<Filter> filters = ParseQuery.ParseFilters(filterFields, filterValues);
+            Page page = ParseQuery.ParsePage(pageNumber, pageItems);
+            Console.WriteLine(sort.ToString(), filters.ToString(), page.ToString());
             List<Tester> records;
-            //Console.WriteLine(sort.ToString(), string.Join(",", filters), page.ToString());
 
             try
             {
-                records = db.LoadRecords<Tester>("TestTable");
+                records = db.LoadRecords<Tester>("TestTable", filters);
             }
             catch
             {
                 return new JsonResult(FailureFact.Default());
             }
 
-            //records = Pager.Paginate(records, page.PageNumber, page.ItemsPerPage);
+            //records = Query.Filter(records, filters);
+
+            records = Query.Paginate(records, page);
 
             return new JsonResult(records);
         }
@@ -89,15 +92,27 @@ namespace Review_Api.Controllers
         }
     }
 
-    public class Pager
+    public class Query
     {
-        public static List<T> Paginate<T>(List<T> content, int page, int items)
+        public static List<Tester> Paginate(List<Tester> content, Page page)
         {
-            if (content.Count < page * items)
+            if (page.ItemsPerPage == -1 || page.PageNumber == -1)
             {
-                return new List<T>();
+                return content;
             }
-            return content.Skip(page * items).Take(items).ToList();
+            if (content.Count < page.PageNumber * page.ItemsPerPage)
+            {
+                return new List<Tester>();
+            }
+            return content.Skip(page.PageNumber * page.ItemsPerPage).Take(page.ItemsPerPage).ToList();
+        }
+        public static List<Tester> Filter(List<Tester> content, List<Filter> filters)
+        {
+            foreach (Filter filter in filters)
+            {
+                content = content.Where(item => item.TestString != filter.value).ToList();
+            }
+            return content;
         }
     }
     public class Tester
