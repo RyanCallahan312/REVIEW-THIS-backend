@@ -23,7 +23,7 @@ namespace Review_Api.Controllers
         private readonly ReviewDB db = new ReviewDB("MovieTest");
         // GET: api/Reviews
         [HttpGet]
-        public JsonResult Search([FromQuery(Name = "sortDirection")] String sortDirection, [FromQuery(Name = "sortField")] String sortField, [FromQuery(Name = "filterFields")] string filterFields, [FromQuery(Name = "filterValues")] string filterValues, [FromQuery(Name = "pageNumber")] int pageNumber = 0, [FromQuery(Name = "pageItems")] int pageItems = -1)
+        public JsonResult Search([FromQuery(Name = "sortDirection")] String sortDirection = "asc", [FromQuery(Name = "sortField")] String sortField = "TimeCreated", [FromQuery(Name = "filterFields")] string filterFields = null, [FromQuery(Name = "filterValues")] string filterValues = null, [FromQuery(Name = "pageNumber")] int pageNumber = 0, [FromQuery(Name = "pageItems")] int pageItems = 0)
         {
 
             Sort sort = ParseQuery.ParseSort(sortDirection, sortField);
@@ -100,6 +100,7 @@ namespace Review_Api.Controllers
     {
         [BsonId]
         public Guid Id { get; set; }
+
 
         public string TestString { get; set; }
 

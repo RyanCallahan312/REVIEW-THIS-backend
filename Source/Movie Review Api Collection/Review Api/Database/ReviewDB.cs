@@ -25,9 +25,9 @@ namespace Review_Api.Database
         public List<T> LoadRecords<T>(string table, List<Filter> filters, Sort sort, Page page)
         {
             var collection = db.GetCollection<T>(table);
-            FilterDefinition<T> mongoFilters = null;
-            SortDefinition<T> mongoSort = null;
-            if (filters != null)
+            FilterDefinition<T> mongoFilters;
+            SortDefinition<T> mongoSort;
+            if (filters.Count > 0)
             {
                 var queryBuilder = Builders<T>.Filter;
                 mongoFilters = queryBuilder.Eq(filters[0].field, filters[0].value);
@@ -48,9 +48,10 @@ namespace Review_Api.Database
             else
             {
                 mongoSort = Builders<T>.Sort.Descending(sort.Field);
-
             }
-            return collection.Find(mongoFilters).Sort(mongoSort).Skip(page.PageNumber * page.ItemsPerPage).Limit(page.ItemsPerPage).ToList();
+            List<T> data = collection.Find(mongoFilters).Sort(mongoSort).Skip(page.PageNumber * page.ItemsPerPage).Limit(page.ItemsPerPage).ToList();
+            data.AsQueryable().OrderBy(e => GetReflectedPropertyValue(e,sort.Field).ToUpper());
+            return data;
         }
 
         public T FindRecordById<T>(string table, Guid Id)
@@ -58,6 +59,12 @@ namespace Review_Api.Database
             var collection = db.GetCollection<T>(table);
             var filter = Builders<T>.Filter.Eq("_id", Id);
             return collection.Find(filter).FirstOrDefault();
+        }
+
+        public static string GetReflectedPropertyValue(object subject, string field)
+        {
+            object reflectedValue = subject.GetType().GetProperty(field).GetValue(subject, null);
+            return reflectedValue != null ? reflectedValue.ToString() : "";
         }
 
     }
