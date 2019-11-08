@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using Review_Api.Models.Query;
@@ -23,21 +22,35 @@ namespace Review_Api.Database
             collection.InsertOne(record);
         }
 
-        public List<T> LoadRecords<T>(string table, List<Filter> filters)
+        public List<T> LoadRecords<T>(string table, List<Filter> filters, Sort sort, Page page)
         {
             var collection = db.GetCollection<T>(table);
+            FilterDefinition<T> mongoFilters = null;
+            SortDefinition<T> mongoSort = null;
             if (filters != null)
             {
                 var queryBuilder = Builders<T>.Filter;
-                var mongoFilters = queryBuilder.Eq(filters[0].field, filters[0].value);
+                mongoFilters = queryBuilder.Eq(filters[0].field, filters[0].value);
                 foreach (Filter filter in filters)
                 {
                     mongoFilters = mongoFilters | queryBuilder.Eq(filter.field, filter.value);
                 }
-
-                return collection.Find(mongoFilters).ToList();
             }
-            return collection.Find(new BsonDocument()).ToList();
+            else
+            {
+                mongoFilters = new BsonDocument();
+            }
+
+            if (sort.Direction == "asc")
+            {
+                mongoSort = Builders<T>.Sort.Ascending(sort.Field);
+            }
+            else
+            {
+                mongoSort = Builders<T>.Sort.Descending(sort.Field);
+
+            }
+            return collection.Find(mongoFilters).Sort(mongoSort).Skip(page.PageNumber * page.ItemsPerPage).Limit(page.ItemsPerPage).ToList();
         }
 
         public T FindRecordById<T>(string table, Guid Id)

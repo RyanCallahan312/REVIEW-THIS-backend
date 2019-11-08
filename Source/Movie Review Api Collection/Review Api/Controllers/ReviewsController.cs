@@ -25,24 +25,29 @@ namespace Review_Api.Controllers
         [HttpGet]
         public JsonResult Search([FromQuery(Name = "sortDirection")] String sortDirection, [FromQuery(Name = "sortField")] String sortField, [FromQuery(Name = "filterFields")] string filterFields, [FromQuery(Name = "filterValues")] string filterValues, [FromQuery(Name = "pageNumber")] int pageNumber = 0, [FromQuery(Name = "pageItems")] int pageItems = -1)
         {
+
             Sort sort = ParseQuery.ParseSort(sortDirection, sortField);
-            List<Filter> filters = ParseQuery.ParseFilters(filterFields, filterValues);
+            List<Filter> filters;
+            try
+            {
+                filters = ParseQuery.ParseFilters(filterFields, filterValues);
+            }
+            catch
+            {
+                return new JsonResult(FailureFact.UnevenFilters());
+            }
             Page page = ParseQuery.ParsePage(pageNumber, pageItems);
             Console.WriteLine(sort.ToString(), filters.ToString(), page.ToString());
             List<Tester> records;
 
             try
             {
-                records = db.LoadRecords<Tester>("TestTable", filters);
+                records = db.LoadRecords<Tester>("TestTable", filters, sort, page);
             }
             catch
             {
                 return new JsonResult(FailureFact.Default());
             }
-
-            //records = Query.Filter(records, filters);
-
-            records = Query.Paginate(records, page);
 
             return new JsonResult(records);
         }
@@ -89,30 +94,6 @@ namespace Review_Api.Controllers
         public JsonResult Patch(int id)
         {
             return new JsonResult($"value {id}");
-        }
-    }
-
-    public class Query
-    {
-        public static List<Tester> Paginate(List<Tester> content, Page page)
-        {
-            if (page.ItemsPerPage == -1 || page.PageNumber == -1)
-            {
-                return content;
-            }
-            if (content.Count < page.PageNumber * page.ItemsPerPage)
-            {
-                return new List<Tester>();
-            }
-            return content.Skip(page.PageNumber * page.ItemsPerPage).Take(page.ItemsPerPage).ToList();
-        }
-        public static List<Tester> Filter(List<Tester> content, List<Filter> filters)
-        {
-            foreach (Filter filter in filters)
-            {
-                content = content.Where(item => item.TestString != filter.value).ToList();
-            }
-            return content;
         }
     }
     public class Tester

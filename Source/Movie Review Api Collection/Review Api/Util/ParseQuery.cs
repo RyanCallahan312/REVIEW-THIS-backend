@@ -30,7 +30,10 @@ namespace Review_Api.Util
 
             List<string> values = filterValues.Split(',').ToList();
             List<string> fields = filterFields.Split(',').ToList();
-
+            if(values.Count != fields.Count)
+            {
+                throw new Exception("Uneven Filters");
+            }
             for (int i = 0; i < fields.Count; i++)
             {
                 filters.Add(new Filter(fields.ElementAt(i), values.ElementAt(i)));
