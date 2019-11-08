@@ -26,11 +26,12 @@ namespace Review_Api.Database
         {
             var collection = db.GetCollection<T>(table);
             FilterDefinition<T> mongoFilters;
-            SortDefinition<T> mongoSort;
+
             if (filters.Count > 0)
             {
                 var queryBuilder = Builders<T>.Filter;
                 mongoFilters = queryBuilder.Eq(filters[0].field, filters[0].value);
+
                 foreach (Filter filter in filters)
                 {
                     mongoFilters = mongoFilters | queryBuilder.Eq(filter.field, filter.value);
@@ -41,16 +42,17 @@ namespace Review_Api.Database
                 mongoFilters = new BsonDocument();
             }
 
+            List<T> data = collection.Find(mongoFilters).Skip(page.PageNumber * page.ItemsPerPage).Limit(page.ItemsPerPage).ToList();
+
             if (sort.Direction == "asc")
             {
-                mongoSort = Builders<T>.Sort.Ascending(sort.Field);
+                data = data.AsQueryable().OrderBy(e => GetReflectedPropertyValue(e, sort.Field).ToUpper()).ToList();
             }
             else
             {
-                mongoSort = Builders<T>.Sort.Descending(sort.Field);
+                data = data.AsQueryable().OrderByDescending(e => GetReflectedPropertyValue(e, sort.Field).ToUpper()).ToList();
             }
-            List<T> data = collection.Find(mongoFilters).Sort(mongoSort).Skip(page.PageNumber * page.ItemsPerPage).Limit(page.ItemsPerPage).ToList();
-            data.AsQueryable().OrderBy(e => GetReflectedPropertyValue(e,sort.Field).ToUpper());
+
             return data;
         }
 
