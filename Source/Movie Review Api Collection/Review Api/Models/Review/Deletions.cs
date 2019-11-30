@@ -9,16 +9,14 @@ namespace Review_Api.Models
 {
     public class Deletion
     {
-        [BsonId]
-        public Guid Id { get; }
         [BsonRequired]
-        public bool Deleted { get; set; }
+        public bool Deleted { get; }
         [BsonRequired]
-        public string User { get; set; }
+        public Guid User { get; }
         [BsonRequired]
-        public DateTime Time { get; set; }
+        public DateTime Time { get; }
 
-        public Deletion(bool deleted, string user, DateTime time)
+        public Deletion(bool deleted, Guid user, DateTime time)
         {
             Deleted = deleted;
             User = user;

@@ -10,23 +10,21 @@ namespace Review_Api.Models
     public class SubmittedReview
     {
         [BsonId]
-        public Guid Id { get; }
+        public Guid ReviewId { get; }
         [BsonRequired]
-        public string ReviewId { get; }
-        [BsonRequired]
-        public string UserId { get; }
+        public Guid UserId { get; }
         [BsonRequired]
         public string Movie { get; }
         [BsonRequired]
         public string Genre { get; }
         [BsonRequired]
-        public float Rating { get; set; }
+        public float Rating { get; }
         [BsonRequired]
-        public string Headline { get; set; }
+        public string Headline { get; }
         [BsonRequired]
-        public List<Section> Sections { get; set; }
+        public List<Section> Sections { get; }
 
-        public SubmittedReview(string reviewId, string userId, string movie, string genre, float rating, string headline, List<Section> sections)
+        public SubmittedReview(Guid reviewId, Guid userId, string movie, string genre, float rating, string headline, List<Section> sections)
         {
             ReviewId = reviewId;
             UserId = userId;

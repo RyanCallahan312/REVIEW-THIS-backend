@@ -9,10 +9,10 @@ namespace Review_Api.Models
 {
     public class Modification 
     {
-        [BsonId]
-        public Guid Id { get; }
         [BsonRequired]
         public DateTime Time { get; set; }
+        [BsonRequired]
+        public Guid User { get; set; }
         [BsonRequired]
         public string Headline { get; set; }
         [BsonRequired]
@@ -20,9 +20,10 @@ namespace Review_Api.Models
         [BsonRequired]
         public float Rating { get; set; }
 
-        public Modification(DateTime time, string headline, List<Section> sections, float rating)
+        public Modification(DateTime time, Guid user, string headline, List<Section> sections, float rating)
         {
             Time = time;
+            User = user;
             Headline = headline;
             Sections = sections;
             Rating = rating;

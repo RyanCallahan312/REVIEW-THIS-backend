@@ -10,20 +10,20 @@ namespace Review_Api.Models
     public class PartialReview
     {
         [BsonRequired]
-        public string ReviewId { get; }
+        public Guid ReviewId { get; }
         [BsonRequired]
-        public string UserId { get; }
+        public Guid UserId { get; }
         [BsonRequired]
         public string Movie { get; }
         [BsonRequired]
         public string Genre { get; }
         [BsonRequired]
-        public float Rating { get; set; }
+        public float Rating { get; }
         [BsonRequired]
-        public string Headline { get; set; }
+        public string Headline { get; }
 
 
-        public PartialReview(string reviewId, string userId, string movie, string genre, float rating, string headline)
+        public PartialReview(Guid reviewId, Guid userId, string movie, string genre, float rating, string headline)
         {
             ReviewId = reviewId;
             UserId = userId;

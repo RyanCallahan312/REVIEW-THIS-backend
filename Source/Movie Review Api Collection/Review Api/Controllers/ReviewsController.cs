@@ -18,9 +18,8 @@ namespace Review_Api.Controllers
         private readonly ReviewDB db = new ReviewDB("MovieTest_V2");
         // GET: api/Reviews
         [HttpGet]
-        public JsonResult Search([FromQuery(Name = "sortDirection")] String sortDirection = "asc", [FromQuery(Name = "sortField")] String sortField = "TestString", [FromQuery(Name = "filterFields")] string filterFields = null, [FromQuery(Name = "filterValues")] string filterValues = null, [FromQuery(Name = "pageNumber")] int pageNumber = 0, [FromQuery(Name = "pageItems")] int pageItems = 10)
+        public JsonResult Get([FromQuery(Name = "sortDirection")] String sortDirection = "asc", [FromQuery(Name = "sortField")] String sortField = "Time", [FromQuery(Name = "filterFields")] string filterFields = null, [FromQuery(Name = "filterValues")] string filterValues = null, [FromQuery(Name = "pageNumber")] int pageNumber = 0, [FromQuery(Name = "pageItems")] int pageItems = 10)
         {
-
             Sort sort = ParseQuery.ParseSort(sortDirection, sortField);
             Page page = ParseQuery.ParsePage(pageNumber, pageItems);
 
@@ -81,7 +80,7 @@ namespace Review_Api.Controllers
         public JsonResult Post([FromBody] Review value)
         {
             db.InsertRecord("Reviews", value);
-            return new JsonResult(SuccessFact.Default(value.Id));
+            return new JsonResult(SuccessFact.Default(value.ReviewId));
         }
 
         // PUT: api/Reviews/5
@@ -130,7 +129,7 @@ namespace Review_Api.Controllers
             }
             else
             {
-                record.Deleted = true;
+                record.Delete(Guid.Empty);
                 db.PutRecord("Reviews", record, id);
             }
             return new JsonResult(SuccessFact.Default(id));
@@ -155,21 +154,21 @@ namespace Review_Api.Controllers
             }
             else
             {
-                record.Deleted = false;
+                record.ReInstate(Guid.Empty);
                 db.PutRecord("Reviews", record, id);
             }
             return new JsonResult(SuccessFact.Default(id));
         }
     }
 
-    public class dead
+    public class Dead
     {
         [BsonId]
         public Guid Id { get; set; }
         public bool Deleted { get; set; }
         public string TestString { get; set; }
 
-        public dead(string testString, bool deleted)
+        public Dead(string testString, bool deleted)
         {
             TestString = testString;
             Deleted = deleted;
