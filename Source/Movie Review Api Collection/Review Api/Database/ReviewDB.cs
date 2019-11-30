@@ -72,9 +72,7 @@ namespace Review_Api.Database
             var queryBuilder = Builders<T>.Filter;
             var mongoFilters = queryBuilder.Eq("_id", id);
             mongoFilters &= queryBuilder.Eq("Deleted", false);
-            T data = collection.Find(mongoFilters).First();
-
-            return data;
+            return collection.Find(mongoFilters).First();
         }
 
         public T FindDeletedRecordById<T>(string table, Guid id)
