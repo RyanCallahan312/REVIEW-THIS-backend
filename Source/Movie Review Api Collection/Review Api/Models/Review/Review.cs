@@ -24,17 +24,17 @@ namespace Review_Api.Models
         [BsonRequired]
         public string Genre { get; }
         [BsonRequired]
-        public float Rating { get; set; }
+        public float Rating { get { return Rating; } set { Rating = value; Modifications.Add(new Modification(DateTime.Now, Headline, Sections, Rating)); } }
         [BsonRequired]
-        public string Headline { get; set; }
+        public string Headline { get { return Headline; } set { Headline = value; Modifications.Add(new Modification(DateTime.Now, Headline, Sections, Rating)); } }
         [BsonRequired]
-        public List<Section> Sections { get; set; }
+        public List<Section> Sections { get { return Sections; } set { Sections = value; Modifications.Add(new Modification(DateTime.Now, Headline, Sections, Rating)); } }
         [BsonRequired]
         public List<Modification> Modifications { get; set; }
         [BsonRequired]
-        public List<Deletion> Deletions { get; set; }
+        public List<Deletion> Deletions { get; }
         [BsonRequired]
-        public List<Guid> Comments { get; set; }
+        public List<Guid> Comments { get; }
 
         public Review(string reviewId, string userId, DateTime time, string movie, string genre, float rating, string headline, List<Section> sections, List<Modification> modifications, List<Deletion> deletions, List<Guid> comments)
         {
@@ -50,5 +50,25 @@ namespace Review_Api.Models
             Deletions = deletions;
             Comments = comments;
         }
+
+        public Review(string reviewId, string userId, string movie, string genre, float rating, string headline, List<Section> sections)
+        {
+
+            ReviewId = reviewId;
+            UserId = userId;
+            Time = DateTime.Now;
+            Movie = movie;
+            Genre = genre;
+            Rating = rating;
+            Headline = headline;
+            Sections = sections;
+            Deletions = null;
+            Comments = null;
+            Modifications = new List<Modification> { new Modification(Time, Headline, Sections, Rating) };
+        }
+
+
+
+
     }
 }

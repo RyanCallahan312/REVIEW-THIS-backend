@@ -12,7 +12,7 @@ namespace Review_Api.Util
         {
             if (sortDirection == null || sortField == null)
             {
-                return new Sort("asc", "time");
+                return new Sort("asc", "TestString");
             }
 
             return new Sort(sortDirection, sortField);

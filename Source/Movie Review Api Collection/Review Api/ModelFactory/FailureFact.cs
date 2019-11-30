@@ -16,6 +16,10 @@ namespace Review_Api.ModelFactory
         {
             return new Failure("ID not found", "NO_REC_BY_ID");
         }
+        public static Failure NoRecordsFound()
+        {
+            return new Failure("No records found for current search", "NO_REC_FOUND");
+        }
         public static Failure UnevenFilters()
         {
             return new Failure("Uneven filters", "VALUE_FIELD_COUNT_MISMATCH");

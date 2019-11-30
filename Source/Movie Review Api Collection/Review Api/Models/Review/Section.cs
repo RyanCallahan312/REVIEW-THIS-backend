@@ -9,8 +9,6 @@ namespace Review_Api.Models
 {
     public class Section
     {
-        [BsonId]
-        public Guid Id { get; }
         [BsonRequired]
         public string Header { get; set; }
         [BsonRequired]

@@ -9,8 +9,6 @@ namespace Review_Api.Models
 {
     public class PartialReview
     {
-        [BsonId]
-        public Guid Id { get; }
         [BsonRequired]
         public string ReviewId { get; }
         [BsonRequired]
@@ -33,6 +31,16 @@ namespace Review_Api.Models
             Genre = genre;
             Rating = rating;
             Headline = headline;
+        }
+
+        public PartialReview(Review fullReview)
+        {
+            ReviewId = fullReview.ReviewId;
+            UserId = fullReview.UserId;
+            Movie = fullReview.Movie;
+            Genre = fullReview.Genre;
+            Rating = fullReview.Rating;
+            Headline = fullReview.Headline;
         }
     }
 }

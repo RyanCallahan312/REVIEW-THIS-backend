@@ -7,7 +7,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Review_Api.Models
 {
-    public class Modification
+    public class Modification 
     {
         [BsonId]
         public Guid Id { get; }

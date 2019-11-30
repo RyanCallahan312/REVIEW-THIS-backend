@@ -1,17 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
-using MongoDB.Driver;
-using Newtonsoft.Json;
 using Review_Api.ModelFactory;
 using Review_Api.Database;
 using Review_Api.Models.Query;
 using Review_Api.Util;
+using Review_Api.Models;
 
 namespace Review_Api.Controllers
 {
@@ -20,13 +15,15 @@ namespace Review_Api.Controllers
     [ApiController]
     public class ReviewsController : ControllerBase
     {
-        private readonly ReviewDB db = new ReviewDB("MovieTest");
+        private readonly ReviewDB db = new ReviewDB("MovieTest_V2");
         // GET: api/Reviews
         [HttpGet]
-        public JsonResult Search([FromQuery(Name = "sortDirection")] String sortDirection = "asc", [FromQuery(Name = "sortField")] String sortField = "TimeCreated", [FromQuery(Name = "filterFields")] string filterFields = null, [FromQuery(Name = "filterValues")] string filterValues = null, [FromQuery(Name = "pageNumber")] int pageNumber = 0, [FromQuery(Name = "pageItems")] int pageItems = 0)
+        public JsonResult Search([FromQuery(Name = "sortDirection")] String sortDirection = "asc", [FromQuery(Name = "sortField")] String sortField = "TestString", [FromQuery(Name = "filterFields")] string filterFields = null, [FromQuery(Name = "filterValues")] string filterValues = null, [FromQuery(Name = "pageNumber")] int pageNumber = 0, [FromQuery(Name = "pageItems")] int pageItems = 10)
         {
 
             Sort sort = ParseQuery.ParseSort(sortDirection, sortField);
+            Page page = ParseQuery.ParsePage(pageNumber, pageItems);
+
             List<Filter> filters;
             try
             {
@@ -36,17 +33,21 @@ namespace Review_Api.Controllers
             {
                 return new JsonResult(FailureFact.UnevenFilters());
             }
-            Page page = ParseQuery.ParsePage(pageNumber, pageItems);
-            Console.WriteLine(sort.ToString(), filters.ToString(), page.ToString());
-            List<Tester> records;
 
+            List<Review> records;
             try
             {
-                records = db.LoadRecords<Tester>("TestTable", filters, sort, page);
+                records = db.LoadRecords<Review>("Reviews", filters, sort, page);
             }
-            catch
+            catch(Exception e)
             {
+                Console.WriteLine(e.Message);
                 return new JsonResult(FailureFact.Default());
+            }
+
+            if (records.Count == 0)
+            {
+                return new JsonResult(FailureFact.NoRecordsFound());
             }
 
             return new JsonResult(records);
@@ -54,61 +55,124 @@ namespace Review_Api.Controllers
 
         // GET: api/Reviews/5
         [HttpGet("{id}", Name = "Get")]
-        public JsonResult Get(string id)
+        public JsonResult Get(Guid id)
         {
-            if (!Guid.TryParse(id, out Guid parsedId))
+
+            Review record;
+            try
             {
-                return new JsonResult(FailureFact.BadId());
+                record = db.FindRecordById<Review>("Reviews", id);
             }
-            Tester record = db.FindRecordById<Tester>("TestTable", parsedId);
+            catch
+            {
+                return new JsonResult(FailureFact.Default());
+            }
+
             if (record == null)
             {
                 return new JsonResult(FailureFact.IdNotFound());
             }
+
             return new JsonResult(record);
         }
 
         // POST: api/Reviews
         [HttpPost]
-        public JsonResult Post([FromBody] Tester value)
+        public JsonResult Post([FromBody] Review value)
         {
-            this.db.InsertRecord("TestTable", value);
-            return new JsonResult($"posted {value.TestString}");
+            db.InsertRecord("Reviews", value);
+            return new JsonResult(SuccessFact.Default(value.Id));
         }
 
         // PUT: api/Reviews/5
         [HttpPut("{id}")]
-        public JsonResult Put(Guid id, [FromBody] string value)
+        public JsonResult Put(Guid id, [FromBody] Review value)
         {
-            return new JsonResult($"value {value} + {id}");
+            Review record;
+            try
+            {
+                record = db.FindRecordById<Review>("Reviews", id);
+            }
+            catch
+            {
+                return new JsonResult(FailureFact.Default());
+            }
+
+            if (record == null)
+            {
+                return new JsonResult(FailureFact.IdNotFound());
+            }
+            else
+            {
+                db.PutRecord("TestTable", value, id);
+            }
+
+            return new JsonResult(SuccessFact.Default(id));
         }
 
         // DELETE: api/ApiWithActions/5
         [HttpDelete("{id}")]
-        public JsonResult Delete(int id)
+        public JsonResult Delete(Guid id)
         {
-            return new JsonResult($"value {id}");
+            Review record;
+            try
+            {
+                record = db.FindRecordById<Review>("Reviews", id);
+            }
+            catch
+            {
+                return new JsonResult(FailureFact.Default());
+            }
+
+            if (record == null)
+            {
+                return new JsonResult(FailureFact.IdNotFound());
+            }
+            else
+            {
+                record.Deleted = true;
+                db.PutRecord("Reviews", record, id);
+            }
+            return new JsonResult(SuccessFact.Default(id));
         }
         // DELETE: api/ApiWithActions/5
         [HttpPatch("{id}")]
-        public JsonResult Patch(int id)
+        public JsonResult Patch(Guid id)
         {
-            return new JsonResult($"value {id}");
+            Review record;
+            try
+            {
+                record = db.FindDeletedRecordById<Review>("Reviews", id);
+            }
+            catch
+            {
+                return new JsonResult(FailureFact.Default());
+            }
+
+            if (record == null)
+            {
+                return new JsonResult(FailureFact.IdNotFound());
+            }
+            else
+            {
+                record.Deleted = false;
+                db.PutRecord("Reviews", record, id);
+            }
+            return new JsonResult(SuccessFact.Default(id));
         }
     }
 
-    public class Tester
+    public class dead
     {
         [BsonId]
         public Guid Id { get; set; }
-
-
+        public bool Deleted { get; set; }
         public string TestString { get; set; }
 
-        public Tester(string testString)
+        public dead(string testString, bool deleted)
         {
-
             TestString = testString;
+            Deleted = deleted;
         }
     }
 }
