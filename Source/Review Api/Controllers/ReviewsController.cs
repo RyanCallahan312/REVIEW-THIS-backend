@@ -20,8 +20,10 @@ namespace Review_Api.Controllers
         private readonly ReviewDB db = new ReviewDB("movie-review");
         // GET: api/Reviews
         [HttpGet]
-        public JsonResult Get([FromQuery(Name = "sortDirection")] String sortDirection = "asc", [FromQuery(Name = "sortField")] String sortField = "Time", [FromQuery(Name = "filterFields")] string filterFields = null, [FromQuery(Name = "filterValues")] string filterValues = null, [FromQuery(Name = "pageNumber")] int pageNumber = 0, [FromQuery(Name = "pageItems")] int pageItems = 10)
+        public JsonResult Get([FromQuery(Name = "sortDirection")] String sortDirection = "asc", [FromQuery(Name = "sortField")] String sortField = "Time", [FromQuery(Name = "filterFields")] string filterFields = null, [FromQuery(Name = "filterValues")] string filterValues = null, [FromQuery(Name = "pageNumber")] int pageNumber = 0, [FromQuery(Name = "pageItems")] int pageItems = 10, [FromBody] NullableGuidDeserializer nullableUserId = null)
         {
+            Guid? userId = nullableUserId.Property;
+
             Sort sort = ParseQuery.ParseSort(sortDirection, sortField);
             Page page = ParseQuery.ParsePage(pageNumber, pageItems);
 
@@ -32,8 +34,8 @@ namespace Review_Api.Controllers
             }
             catch (Exception e)
             {
-                Failure failure = FailureFact.UnevenFilters(e);
-                db.InsertRecord("failures", failure);
+                Failure failure = FailureFact.UnevenFilters(e, userId);
+                db.InsertRecord("Failures", failure);
                 return new JsonResult(failure);
             }
 
@@ -44,15 +46,15 @@ namespace Review_Api.Controllers
             }
             catch (Exception e)
             {
-                Failure failure = FailureFact.Default(e);
-                db.InsertRecord("failures", failure);
+                Failure failure = FailureFact.Default(e, userId);
+                db.InsertRecord("Failures", failure);
                 return new JsonResult(failure);
             }
 
             if (records.Count == 0)
             {
-                Failure failure = FailureFact.NoRecordsFound(null);
-                db.InsertRecord("failures", failure);
+                Failure failure = FailureFact.NoRecordsFound(null, userId);
+                db.InsertRecord("Failures", failure);
                 return new JsonResult(failure);
             }
 
@@ -62,32 +64,38 @@ namespace Review_Api.Controllers
                 partialRecords.Add(record.ToPartialReview());
             }
 
+            Success success = SuccessFact.AllReviewsRetrieved(userId);
+            db.InsertRecord("Successes", success);
+
             return new JsonResult(partialRecords);
         }
 
         // GET: api/Reviews/5
         [HttpGet("{id}", Name = "Get")]
-        public JsonResult Get(Guid id)
+        public JsonResult Get(Guid reviewId, [FromBody] Guid? userId = null)
         {
 
             Review record;
             try
             {
-                record = db.FindRecordById<Review>("Reviews", id);
+                record = db.FindRecordById<Review>("Reviews", reviewId);
             }
             catch (Exception e)
             {
-                Failure failure = FailureFact.Default(e);
-                db.InsertRecord("failures", failure);
+                Failure failure = FailureFact.Default(e, userId);
+                db.InsertRecord("Failures", failure);
                 return new JsonResult(failure);
             }
 
             if (record == null)
             {
-                Failure failure = FailureFact.IdNotFound(null);
-                db.InsertRecord("failures", failure);
+                Failure failure = FailureFact.IdNotFound(null, userId);
+                db.InsertRecord("Failures", failure);
                 return new JsonResult(failure);
             }
+
+            Success success = SuccessFact.ReviewRetrieved(reviewId, userId);
+            db.InsertRecord("Successes", success);
 
             return new JsonResult(record);
         }
@@ -97,25 +105,15 @@ namespace Review_Api.Controllers
         public JsonResult Post([FromBody] Review value)
         {
             db.InsertRecord("Reviews", value);
-            return new JsonResult(SuccessFact.Default(value.ReviewId));
+            Success success = SuccessFact.ReviewCreated(value.ReviewId, value.UserId);
+            db.InsertRecord("Successes", success);
+            return new JsonResult(success);
         }
 
         // PUT: api/Reviews/5
         [HttpPut("{id}")]
-        public JsonResult Put(Guid id, [FromBody] JObject value)
+        public JsonResult Put(Guid reviewId, [FromBody] JObject value)
         {
-
-            List<Section> sections;
-            try
-            {
-                sections = value["sections"].ToObject<List<Section>>();
-            }
-            catch (Exception e)
-            {
-                Failure failure = FailureFact.BadRequestBody(e);
-                db.InsertRecord("failures", failure);
-                return new JsonResult(failure);
-            }
 
             Guid userId;
             try
@@ -124,108 +122,114 @@ namespace Review_Api.Controllers
             }
             catch (Exception e)
             {
-                Failure failure = FailureFact.BadUserId(e);
-                db.InsertRecord("failures", failure);
+                Failure failure = FailureFact.BadUserId(e, null);
+                db.InsertRecord("Failures", failure);
+                return new JsonResult(failure);
+            }
+
+            List<Section> sections;
+            try
+            {
+                sections = value["sections"].ToObject<List<Section>>();
+            }
+            catch (Exception e)
+            {
+                Failure failure = FailureFact.BadRequestBody(e, userId);
+                db.InsertRecord("Failures", failure);
                 return new JsonResult(failure);
             }
 
             Review record;
             try
             {
-                record = db.FindRecordById<Review>("Reviews", id);
+                record = db.FindRecordById<Review>("Reviews", reviewId);
             }
             catch (Exception e)
             {
-                Failure failure = FailureFact.Default(e);
-                db.InsertRecord("failures", failure);
+                Failure failure = FailureFact.Default(e, userId);
+                db.InsertRecord("Failures", failure);
                 return new JsonResult(failure);
             }
 
             if (record == null)
             {
-                Failure failure = FailureFact.IdNotFound(null);
-                db.InsertRecord("failures", failure);
+                Failure failure = FailureFact.IdNotFound(null, userId);
+                db.InsertRecord("Failures", failure);
                 return new JsonResult(failure);
             }
 
             record.SetSection(sections, userId);
 
-            db.PutRecord("TestTable", value, id);
+            db.PutRecord("Reviews", value, reviewId);
 
-            return new JsonResult(SuccessFact.Default(id));
+            Success success = SuccessFact.ReviewSectionsModified(reviewId, userId);
+            db.InsertRecord("Successes", success);
+            return new JsonResult(success);
         }
 
         // DELETE: api/ApiWithActions/5
         [HttpDelete("{id}")]
-        public JsonResult Delete(Guid id)
+        public JsonResult Delete(Guid reviewId, [FromBody] Guid? userId = null)
         {
             Review record;
             try
             {
-                record = db.FindRecordById<Review>("Reviews", id);
+                record = db.FindRecordById<Review>("Reviews", reviewId);
             }
             catch (Exception e)
             {
-                Failure failure = FailureFact.Default(e);
-                db.InsertRecord("failures", failure);
+                Failure failure = FailureFact.Default(e, userId);
+                db.InsertRecord("Failures", failure);
                 return new JsonResult(failure);
             }
 
             if (record == null)
             {
-                Failure failure = FailureFact.IdNotFound(null);
-                db.InsertRecord("failures", failure);
+                Failure failure = FailureFact.IdNotFound(null, userId);
+                db.InsertRecord("Failures", failure);
                 return new JsonResult(failure);
             }
             else
             {
                 record.Delete(Guid.Empty);
-                db.PutRecord("Reviews", record, id);
+                db.PutRecord("Reviews", record, reviewId);
             }
-            return new JsonResult(SuccessFact.Default(id));
+
+            Success success = SuccessFact.ReviewSoftDelete(reviewId, userId);
+            db.InsertRecord("Successes", success);
+            return new JsonResult(success);
         }
         // DELETE: api/ApiWithActions/5
         [HttpPatch("{id}")]
-        public JsonResult Patch(Guid id)
+        public JsonResult Patch(Guid reviewId, [FromBody] Guid? userId = null)
         {
             Review record;
             try
             {
-                record = db.FindDeletedRecordById<Review>("Reviews", id);
+                record = db.FindDeletedRecordById<Review>("Reviews", reviewId);
             }
             catch (Exception e)
             {
-                Failure failure = FailureFact.Default(e);
-                db.InsertRecord("failures", failure);
+                Failure failure = FailureFact.Default(e, userId);
+                db.InsertRecord("Failures", failure);
                 return new JsonResult(failure);
             }
 
             if (record == null)
             {
-                Failure failure = FailureFact.IdNotFound(null);
-                db.InsertRecord("failures", failure);
+                Failure failure = FailureFact.IdNotFound(null, userId);
+                db.InsertRecord("Failures", failure);
                 return new JsonResult(failure);
             }
             else
             {
                 record.ReInstate(Guid.Empty);
-                db.PutRecord("Reviews", record, id);
+                db.PutRecord("Reviews", record, reviewId);
             }
-            return new JsonResult(SuccessFact.Default(id));
-        }
-    }
 
-    public class Dead
-    {
-        [BsonId]
-        public Guid Id { get; set; }
-        public bool Deleted { get; set; }
-        public string TestString { get; set; }
-
-        public Dead(string testString, bool deleted)
-        {
-            TestString = testString;
-            Deleted = deleted;
+            Success success = SuccessFact.ReviewReinstated(reviewId, userId);
+            db.InsertRecord("Successes", success);
+            return new JsonResult(success);
         }
     }
 }
