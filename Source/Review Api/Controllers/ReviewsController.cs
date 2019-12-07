@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
-using MongoDB.Bson.Serialization.Attributes;
 using Review_Api.ModelFactory;
 using Review_Api.Database;
 using Review_Api.Models.Query;
@@ -71,9 +70,11 @@ namespace Review_Api.Controllers
         }
 
         // GET: api/Reviews/5
-        [HttpGet("{id}", Name = "Get")]
-        public JsonResult Get(Guid reviewId, [FromBody] Guid? userId = null)
+        [HttpGet("{reviewId}", Name = "Get")]
+        public JsonResult Get(Guid reviewId, [FromBody] NullableGuidDeserializer nullableUserId = null)
         {
+
+            Guid? userId = nullableUserId.Property;
 
             Review record;
             try
@@ -111,7 +112,7 @@ namespace Review_Api.Controllers
         }
 
         // PUT: api/Reviews/5
-        [HttpPut("{id}")]
+        [HttpPut("{reviewId}")]
         public JsonResult Put(Guid reviewId, [FromBody] JObject value)
         {
 
@@ -168,8 +169,8 @@ namespace Review_Api.Controllers
         }
 
         // DELETE: api/ApiWithActions/5
-        [HttpDelete("{id}")]
-        public JsonResult Delete(Guid reviewId, [FromBody] Guid? userId = null)
+        [HttpDelete("{reviewId}")]
+        public JsonResult Delete(Guid reviewId, [FromBody] Guid userId)
         {
             Review record;
             try
@@ -200,8 +201,8 @@ namespace Review_Api.Controllers
             return new JsonResult(success);
         }
         // DELETE: api/ApiWithActions/5
-        [HttpPatch("{id}")]
-        public JsonResult Patch(Guid reviewId, [FromBody] Guid? userId = null)
+        [HttpPatch("{reviewId}")]
+        public JsonResult Patch(Guid reviewId, [FromBody] Guid userId)
         {
             Review record;
             try

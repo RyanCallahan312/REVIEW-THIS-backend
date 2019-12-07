@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using MongoDB.Bson;
 using MongoDB.Driver;
 using Review_Api.Models.Query;
 
@@ -72,7 +71,7 @@ namespace Review_Api.Database
             var queryBuilder = Builders<T>.Filter;
             var mongoFilters = queryBuilder.Eq("_id", id);
             mongoFilters &= queryBuilder.Eq("Deleted", false);
-            return collection.Find(mongoFilters).First();
+            return collection.Find(mongoFilters).FirstOrDefault();
         }
 
         public T FindDeletedRecordById<T>(string table, Guid id)
