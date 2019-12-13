@@ -49,5 +49,6 @@
             }
         }
     },
+    "deleted": { "type": "boolean" },
     "comments": { "type": "array", "items": { "type": "string" } }
 }

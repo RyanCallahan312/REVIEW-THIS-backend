@@ -14,7 +14,7 @@
     "paths": {
         "/reviews": {
             "get": {
-                "summary": "returns a list of reviews",
+                "summary": "returns a list of partial reviews",
                 "description": "returns a paginated list of all reviews by sort and filters. Default sort is newest. Default filter is none. Default pagination is page one with 25 items.",
                 "parameters": [
                     {
@@ -398,155 +398,102 @@
     "components": {
         "schemas": {
             "review": {
-                "reviewId": {
-                    "type": "string"
-                },
-                "userId": {
-                    "type": "string"
-                },
-                "author": {
-                    "type": "string"
-                },
-                "time": {
-                    "type": "string",
-                    "format": "date-time"
-                },
-                "movie": {
-                    "type": "string"
-                },
-                "genre": {
-                    "type": "string"
-                },
-                "rating": {
-                    "type": "float"
-                },
-                "headline": {
-                    "type": "string"
-                },
-                "sections": {
-                    "type": "array",
-                    "items": {
-                        "type": "object",
-                        "properties": {
-                            "header": {
-                                "type": "string"
-                            },
-                            "body": {
-                                "type": "string"
+                "type": "object",
+                "properties": {
+                    "reviewId": { "type": "string" },
+                    "userId": { "type": "string" },
+                    "author": { "type": "string" },
+                    "time": { "type": "string", "format": "date-time" },
+                    "movie": { "type": "string" },
+                    "genre": { "type": "string" },
+                    "rating": { "type": "float" },
+                    "headline": { "type": "string" },
+                    "sections": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "header": { "type": "string" },
+                                "body": { "type": "string" }
                             }
                         }
-                    }
-                },
-                "modifications": {
-                    "type": "array",
-                    "items": {
-                        "type": "object",
-                        "properties": {
-                            "time": {
-                                "type": "string",
-                                "format": "date-time"
-                            },
-                            "headline": {
-                                "type": "string"
-                            },
-                            "sections": {
-                                "type": "array",
-                                "items": {
-                                    "type": "object",
-                                    "properties": {
-                                        "header": {
-                                            "type": "string"
-                                        },
-                                        "body": {
-                                            "type": "string"
+                    },
+                    "modifications": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "time": {
+                                    "type": "string",
+                                    "format": "date-time"
+                                },
+                                "headline": { "type": "string" },
+                                "sections": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "header": { "type": "string" },
+                                            "body": { "type": "string" }
                                         }
                                     }
+                                },
+                                "rating": { "type": "float" }
+                            }
+                        }
+                    },
+                    "deletions": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "deleted": { "type": "boolean" },
+                                "user": { "type": "string" },
+                                "time": {
+                                    "type": "string",
+                                    "format": "date-time"
                                 }
-                            },
-                            "rating": {
-                                "type": "float"
                             }
                         }
-                    }
-                },
-                "deletions": {
-                    "type": "array",
-                    "items": {
-                        "type": "object",
-                        "properties": {
-                            "deleted": {
-                                "type": "boolean"
-                            },
-                            "user": {
-                                "type": "string"
-                            },
-                            "time": {
-                                "type": "string",
-                                "format": "date-time"
-                            }
-                        }
-                    }
-                },
-                "comments": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
+                    },
+                    "deleted": { "type": "boolean" },
+                    "comments": {
+                        "type": "array",
+                        "items": { "type": "string" }
                     }
                 }
             },
-            "limitedReview": {
+            "partialReview": {
                 "type": "object",
                 "properties": {
-                    "reviewId": {
-                        "type": "string"
-                    },
-                    "userId": {
-                        "type": "string"
-                    },
-                    "author": {
-                        "type": "string"
-                    },
-                    "time": {
-                        "type": "string",
-                        "format": "date-time"
-                    },
-                    "movie": {
-                        "type": "string"
-                    },
-                    "genre": {
-                        "type": "string"
-                    },
-                    "rating": {
-                        "type": "float"
-                    },
-                    "headline": {
-                        "type": "string"
-                    }
+                    "reviewId": { "type": "string" },
+                    "userId": { "type": "string" },
+                    "author": { "type": "string" },
+                    "time": { "type": "string", "format": "date-time" },
+                    "movie": { "type": "string" },
+                    "genre": { "type": "string" },
+                    "rating": { "type": "float" },
+                    "headline": { "type": "string" }
                 }
             },
             "unauthorized": {
                 "type": "object",
                 "properties": {
-                    "message": {
-                        "type": "string"
-                    },
-                    "errorCode": {
-                        "type": "string"
-                    }
+                    "message": { "type": "string" },
+                    "errorCode": { "type": "string" },
+                    "userId": { "type": "string" },
+                    "time": { "type": "string", "format": "date-time" }
                 }
             },
             "internalError": {
                 "type": "object",
                 "properties": {
-                    "message": {
-                        "type": "string"
-                    },
-                    "errorCode": {
-                        "type": "string"
-                    },
-                    "trace": {
-                        "type": "string"
-                    }
+                    "message": { "type": "string" },
+                    "errorCode": { "type": "string" },
+                    "exception": { "type": "string" },
+                    "reviewId": { "type": "string" },
+                    "userId": { "type": "string" },
+                    "time": { "type": "string", "format": "date-time" }
                 }
             },
             "filters": {
@@ -588,58 +535,34 @@
             "successObject": {
                 "type": "object",
                 "properties": {
-                    "message": {
-                        "type": "string"
-                    },
-                    "reviewId": {
-                        "type": "string"
-                    }
+                    "message": { "type": "string" },
+                    "successCode": { "type": "string" },
+                    "reviewId": { "type": "string" },
+                    "userId": { "type": "string" },
+                    "time": { "type": "string", "format": "date-time" }
                 }
             },
             "submittedReview": {
-                "reviewId": {
-                    "type": "string"
-                },
-                "userId": {
-                    "type": "string"
-                },
-                "author": {
-                    "type": "string"
-                },
-                "time": {
-                    "type": "string",
-                    "format": "date-time"
-                },
-                "movie": {
-                    "type": "string"
-                },
-                "genre": {
-                    "type": "string"
-                },
-                "rating": {
-                    "type": "float"
-                },
-                "headline": {
-                    "type": "string"
-                },
-                "sections": {
-                    "type": "aray",
-                    "items": {
-                        "type": "object",
-                        "properties": {
-                            "header": {
-                                "type": "string"
-                            },
-                            "body": {
-                                "type": "string"
+                "type": "object",
+                "properties": {
+                    "userId": { "type": "string" },
+                    "author": { "type": "string" },
+                    "movie": { "type": "string" },
+                    "genre": { "type": "string" },
+                    "rating": { "type": "float" },
+                    "headline": { "type": "string" },
+                    "sections": {
+                        "type": "aray",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "header": { "type": "string" },
+                                "body": { "type": "string" }
                             }
                         }
                     }
                 }
             }
         }
-    },
-    "examples": {
-        "review": {}
     }
 }

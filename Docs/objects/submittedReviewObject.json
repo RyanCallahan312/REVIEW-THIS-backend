@@ -1,8 +1,6 @@
 {
-    "reviewId": { "type": "string" },
     "userId": { "type": "string" },
     "author": { "type": "string" },
-    "time": { "type": "string", "format": "date-time" },
     "movie": { "type": "string" },
     "genre": { "type": "string" },
     "rating": { "type": "float" },

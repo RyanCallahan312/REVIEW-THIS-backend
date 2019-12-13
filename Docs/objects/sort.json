@@ -1,8 +1,4 @@
 {
-    "direction": {
-        "type": "string"
-    },
-    "field": {
-        "type": "string"
-    }
+    "direction": { "type": "string" },
+    "field": { "type": "string" }
 }

@@ -5,31 +5,33 @@ namespace Review_Api.Models.Query
     public class Filter
     {
 
-        public string field;
-        public string value;
+        public string Field { get; set; }
+        public string Value { get; set; }
 
         public Filter(string field, string value)
         {
-            this.field = field;
-            this.value = value;
+            Field = field;
+            Value = value;
         }
 
         public Filter()
         {
+            Field = null;
+            Value = null;
         }
 
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
 
-            if(field == null)
+            if (Field == null)
             {
-                sb.Append(field + " ");
+                sb.Append(Field + " ");
             }
 
-            if (value == null)
+            if (Value == null)
             {
-                sb.Append(value);
+                sb.Append(Value);
             }
 
             return sb.ToString();

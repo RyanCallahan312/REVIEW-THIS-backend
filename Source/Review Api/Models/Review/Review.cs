@@ -12,6 +12,8 @@ namespace Review_Api.Models
         [BsonRequired]
         public Guid UserId { get; set; }
         [BsonRequired]
+        public string Author { get; set; }
+        [BsonRequired]
         public DateTime Time { get; set; }
         [BsonRequired]
         public string Movie { get; set; }
@@ -32,10 +34,11 @@ namespace Review_Api.Models
         [BsonRequired]
         public List<Guid> Comments { get; set; }
 
-        public Review(Guid reviewId, Guid userId, DateTime time, string movie, string genre, float rating, string headline, List<Section> sections, List<Modification> modifications, List<Deletion> deletions, bool deleted, List<Guid> comments)
+        public Review(Guid reviewId, Guid userId, string author, DateTime time, string movie, string genre, float rating, string headline, List<Section> sections, List<Modification> modifications, List<Deletion> deletions, bool deleted, List<Guid> comments)
         {
             ReviewId = reviewId;
             UserId = userId;
+            Author = author;
             Time = time;
             Movie = movie;
             Genre = genre;
@@ -53,6 +56,7 @@ namespace Review_Api.Models
 
             ReviewId = Guid.NewGuid();
             UserId = userId;
+            Author = "Temp user because auth and users aren't set up yet";
             Time = DateTime.Now;
             Movie = movie;
             Genre = genre;

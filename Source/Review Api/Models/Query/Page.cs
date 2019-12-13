@@ -2,8 +2,8 @@
 {
     public class Page
     {
-        public int PageNumber;
-        public int ItemsPerPage;
+        public int PageNumber { get; set; }
+        public int ItemsPerPage { get; set; }
 
         public Page(int pageNumber, int itemsPerPage)
         {

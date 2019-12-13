@@ -37,11 +37,11 @@ namespace Review_Api.Database
             if (filters.Count > 0)
             {
                 var queryBuilder = Builders<T>.Filter;
-                mongoFilters = queryBuilder.Eq(filters[0].field, filters[0].value);
+                mongoFilters = queryBuilder.Eq(filters[0].Field, filters[0].Value);
 
                 foreach (Filter filter in filters)
                 {
-                    mongoFilters |= queryBuilder.Eq(filter.field, filter.value);
+                    mongoFilters |= queryBuilder.Eq(filter.Field, filter.Value);
                 }
 
                 mongoFilters |= queryBuilder.Eq("Deleted", false);

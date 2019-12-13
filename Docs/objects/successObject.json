@@ -1,4 +1,7 @@
 {
     "message": { "type": "string" },
-    "reviewId": { "type": "string" }
+    "successCode": { "type": "string" },
+    "reviewId": { "type": "string" },
+    "userId": { "type": "string" },
+    "time": { "type": "string", "format": "date-time" }
 }

@@ -4,8 +4,8 @@ namespace Review_Api.Models.Query
 {
     public class Sort
     {
-        public string Direction;
-        public string Field;
+        public string Direction { get; set; }
+        public string Field { get; set; }
 
         public Sort(string direction, string field)
         {
@@ -19,12 +19,12 @@ namespace Review_Api.Models.Query
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder("");
-            if(Direction != null)
+            if (Direction != null)
             {
                 sb.Append(Direction);
             }
 
-            if(Field != null)
+            if (Field != null)
             {
                 sb.Append("");
             }
