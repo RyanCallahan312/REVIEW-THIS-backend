@@ -180,8 +180,20 @@ namespace Review_Api.Controllers
 
         // DELETE: api/ApiWithActions/5
         [HttpDelete("{reviewId}")]
-        public ActionResult Delete(Guid reviewId, [FromBody] Guid userId)
+        public ActionResult Delete(Guid reviewId, [FromBody] JObject value)
         {
+            Guid userId;
+            try
+            {
+                userId = value["userId"].ToObject<Guid>();
+            }
+            catch (Exception e)
+            {
+                Failure failure = FailureFact.BadUserId(e, null);
+                db.InsertRecord("Failures", failure);
+                return BadRequest(failure);
+            }
+
             Review record;
             try
             {
@@ -189,9 +201,9 @@ namespace Review_Api.Controllers
             }
             catch (Exception e)
             {
-                Failure failure = FailureFact.Default(e, userId);
+                Failure failure = FailureFact.BadUserId(e, null);
                 db.InsertRecord("Failures", failure);
-                return StatusCode(500, failure);
+                return BadRequest(failure);
             }
 
             if (record == null)
@@ -212,8 +224,20 @@ namespace Review_Api.Controllers
         }
         // DELETE: api/ApiWithActions/5
         [HttpPatch("{reviewId}")]
-        public ActionResult Patch(Guid reviewId, [FromBody] Guid userId)
+        public ActionResult Patch(Guid reviewId, [FromBody] JObject value)
         {
+            Guid userId;
+            try
+            {
+                userId = value["userId"].ToObject<Guid>();
+            }
+            catch (Exception e)
+            {
+                Failure failure = FailureFact.BadUserId(e, null);
+                db.InsertRecord("Failures", failure);
+                return BadRequest(failure);
+            }
+
             Review record;
             try
             {
