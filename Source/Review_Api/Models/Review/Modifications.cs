@@ -16,14 +16,17 @@ namespace Review_Api.Models
         public List<Section> Sections { get; set; }
         [BsonRequired]
         public float Rating { get; set; }
+        [BsonRequired]
+        public List<Guid> Comments { get; set; }
 
-        public Modification(DateTime time, Guid user, string headline, List<Section> sections, float rating)
+        public Modification(DateTime time, Guid user, string headline, List<Section> sections, float rating, List<Guid> comments)
         {
             Time = time;
             User = user;
             Headline = headline;
             Sections = sections;
             Rating = rating;
+            Comments = comments;
         }
     }
 }

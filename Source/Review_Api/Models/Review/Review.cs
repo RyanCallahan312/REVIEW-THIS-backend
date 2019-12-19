@@ -69,7 +69,8 @@ namespace Review_Api.Models
             };
             Deleted = false;
             Comments = new List<Guid>();
-            Modifications = new List<Modification> { new Modification(Time, userId, Headline, Sections, Rating) };
+            Modifications = new List<Modification> { new Modification(DateTime.Now, userId, Headline, Sections, Rating, Comments) };
+
         }
 
         public void Delete(Guid userId)
@@ -87,19 +88,25 @@ namespace Review_Api.Models
         public void SetRating(float value, Guid userId)
         {
             Rating = value;
-            Modifications.Add(new Modification(DateTime.Now, userId, Headline, Sections, Rating));
+            Modifications.Add(new Modification(DateTime.Now, userId, Headline, Sections, Rating, Comments));
         }
 
         public void SetHeadline(string value, Guid userId)
         {
             Headline = value;
-            Modifications.Add(new Modification(DateTime.Now, userId, Headline, Sections, Rating));
+            Modifications.Add(new Modification(DateTime.Now, userId, Headline, Sections, Rating, Comments));
         }
 
         public void SetSection(List<Section> value, Guid userId)
         {
             Sections = value;
-            Modifications.Add(new Modification(DateTime.Now, userId, Headline, Sections, Rating));
+            Modifications.Add(new Modification(DateTime.Now, userId, Headline, Sections, Rating, Comments));
+        }
+
+        public void SetComments(List<Guid> value, Guid userId)
+        {
+            Comments = value;
+            Modifications.Add(new Modification(DateTime.Now, userId, Headline, Sections, Rating, Comments));
         }
 
         public PartialReview ToPartialReview()

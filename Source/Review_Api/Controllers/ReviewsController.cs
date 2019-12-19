@@ -17,7 +17,7 @@ namespace Review_Api.Controllers
     public class ReviewsController : ControllerBase
     {
         private readonly ReviewDB db = new ReviewDB("movie-review");
-        // GET: api/Reviews
+        // gets a list of partial reviews
         [HttpGet]
         public ActionResult Get([FromQuery(Name = "sortDirection")] String sortDirection = "asc", [FromQuery(Name = "sortField")] String sortField = "Time", [FromQuery(Name = "filterFields")] string filterFields = null, [FromQuery(Name = "filterValues")] string filterValues = null, [FromQuery(Name = "pageNumber")] int pageNumber = 0, [FromQuery(Name = "pageItems")] int pageItems = 10, [FromBody] NullableGuidDeserializer nullableUserId = null)
         {
@@ -69,7 +69,7 @@ namespace Review_Api.Controllers
             return new OkObjectResult(partialRecords);
         }
 
-        // GET: api/Reviews/5
+        // get the one full review
         [HttpGet("{reviewId}", Name = "Get")]
         public ActionResult Get(Guid reviewId, [FromBody] NullableGuidDeserializer nullableUserId = null)
         {
@@ -101,7 +101,7 @@ namespace Review_Api.Controllers
             return new OkObjectResult(record);
         }
 
-        // POST: api/Reviews
+        // creates a review
         [HttpPost]
         public ActionResult Post([FromBody] Review value)
         {
@@ -121,7 +121,7 @@ namespace Review_Api.Controllers
             return new OkObjectResult(success);
         }
 
-        // PUT: api/Reviews/5
+        // updates sections in a review
         [HttpPut("{reviewId}")]
         public ActionResult Put(Guid reviewId, [FromBody] JObject value)
         {
@@ -138,10 +138,18 @@ namespace Review_Api.Controllers
                 return BadRequest(failure);
             }
 
-            List<Section> sections;
+            List<Section> sections = null;
+            List<Guid> comments = null;
             try
             {
-                sections = value["sections"].ToObject<List<Section>>();
+                if(value["sections"] != null)
+                {
+                    sections = value["sections"].ToObject<List<Section>>();
+                }
+                else
+                {
+                    comments = value["comments"].ToObject<List<Guid>>();
+                }
             }
             catch (Exception e)
             {
@@ -169,7 +177,14 @@ namespace Review_Api.Controllers
                 return NotFound(failure);
             }
 
-            record.SetSection(sections, userId);
+            if (sections != null)
+            {
+                record.SetSection(sections, userId);
+            }
+            else
+            {
+                record.SetComments(comments, userId);
+            }
 
             db.PutRecord("Reviews", value, reviewId);
 
@@ -178,7 +193,7 @@ namespace Review_Api.Controllers
             return new OkObjectResult(success);
         }
 
-        // DELETE: api/ApiWithActions/5
+        // Soft deletes a review
         [HttpDelete("{reviewId}")]
         public ActionResult Delete(Guid reviewId, [FromBody] JObject value)
         {
@@ -222,7 +237,8 @@ namespace Review_Api.Controllers
             db.InsertRecord("Successes", success);
             return new OkObjectResult(success);
         }
-        // DELETE: api/ApiWithActions/5
+
+        //Un-deletes a soft deleted review
         [HttpPatch("{reviewId}")]
         public ActionResult Patch(Guid reviewId, [FromBody] JObject value)
         {
