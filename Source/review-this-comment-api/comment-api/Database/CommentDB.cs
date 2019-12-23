@@ -1,0 +1,76 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using MongoDB.Driver;
+
+namespace Review_Api.Database
+{
+    public class ReviewDB
+    {
+        private readonly IMongoDatabase db;
+
+        public ReviewDB(string database)
+        {
+            var client = new MongoClient();
+            db = client.GetDatabase(database);
+        }
+        public void InsertRecord<T>(string table, T record)
+        {
+            var collection = db.GetCollection<T>(table);
+            collection.InsertOne(record);
+        }
+
+        public void PutRecord<T>(string table, T record, Guid id)
+        {
+            var collection = db.GetCollection<T>(table);
+            var queryBuilder = Builders<T>.Filter;
+            var mongoFilters = queryBuilder.Eq("_id", id);
+            collection.ReplaceOne(mongoFilters, record);
+        }
+
+        public List<T> LoadRecords<T>(string table, List<Guid> commentIds)
+        {
+            var collection = db.GetCollection<T>(table);
+
+            var queryBuilder = Builders<T>.Filter;
+
+            var mongoFilters = queryBuilder.In("_id", commentIds);
+            mongoFilters &= queryBuilder.Eq("Deleted", false);
+
+            return collection.Find(mongoFilters).ToList();
+        }
+
+        public T FindRecordById<T>(string table, Guid id)
+        {
+            var collection = db.GetCollection<T>(table);
+
+            var queryBuilder = Builders<T>.Filter;
+
+            var mongoFilters = queryBuilder.Eq("_id", id);
+            mongoFilters &= queryBuilder.Eq("Deleted", false);
+
+            return collection.Find(mongoFilters).FirstOrDefault();
+        }
+
+        public T FindDeletedRecordById<T>(string table, Guid id)
+        {
+            var collection = db.GetCollection<T>(table);
+            var filter = Builders<T>.Filter.Eq("_id", id);
+            return collection.Find(filter).FirstOrDefault();
+        }
+
+        public string RemoveRecordById<T>(string table, Guid id)
+        {
+            var collection = db.GetCollection<T>(table);
+            var filter = Builders<T>.Filter.Eq("_id", id);
+            return collection.DeleteOne(filter).ToString();
+        }
+
+        public static string GetReflectedPropertyValue(object subject, string field)
+        {
+            object reflectedValue = subject.GetType().GetProperty(field).GetValue(subject, null);
+            return reflectedValue != null ? reflectedValue.ToString() : "";
+        }
+
+    }
+}

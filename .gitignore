@@ -1,6 +1,8 @@
-/Source/Movie Review Api Collection/.vs*
-/Source/Movie Review Api Collection/Movie Review Api Collection.sln
-/Source/Movie Review Api Collection/Review Api/bin*
-/Source/Movie Review Api Collection/Review Api/obj*
-/Source/Movie Review Api Collection/Comment Api/bin*
-/Source/Movie Review Api Collection/Comment Api/obj*
+
+/Source/review-this-comment-api/comment-api/bin*
+/Source/review-this-comment-api/comment-api/obj*
+/Source/review-this-review-api/review-api/bin*
+/Source/review-this-review-api/review-api/obj*
+
+.vs
+*.sln
