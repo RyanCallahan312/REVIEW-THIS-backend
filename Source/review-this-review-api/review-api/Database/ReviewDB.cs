@@ -15,6 +15,7 @@ namespace review_api.Database
             var client = new MongoClient();
             db = client.GetDatabase(database);
         }
+
         public void InsertRecord<T>(string table, T record)
         {
             var collection = db.GetCollection<T>(table);
@@ -34,7 +35,8 @@ namespace review_api.Database
             var collection = db.GetCollection<T>(table);
             FilterDefinition<T> mongoFilters;
 
-            if (filters.Count > 0)
+            //make filters
+            if (filters != null && filters.Count > 0)
             {
                 var queryBuilder = Builders<T>.Filter;
                 mongoFilters = queryBuilder.Eq(filters[0].Field, filters[0].Value);
@@ -51,15 +53,27 @@ namespace review_api.Database
                 mongoFilters = Builders<T>.Filter.Eq("Deleted", false);
             }
 
+            //get data
             List<T> data = collection.Find(mongoFilters).ToList();
 
-            if (sort.Direction == "asc")
+
+            //sort data
+            if (sort != null)
             {
-                data = data.AsQueryable().OrderBy(e => GetReflectedPropertyValue(e, sort.Field).ToUpper()).Skip(page.PageNumber * page.ItemsPerPage).Take(page.ItemsPerPage).ToList();
+                if (sort.Direction == "asc")
+                {
+                    data = data.AsQueryable().OrderBy(e => GetReflectedPropertyValue(e, sort.Field).ToUpper()).ToList();
+                }
+                else
+                {
+                    data = data.AsQueryable().OrderByDescending(e => GetReflectedPropertyValue(e, sort.Field).ToUpper()).ToList();
+                }
             }
-            else
+
+            //paginate data
+            if (page != null)
             {
-                data = data.AsQueryable().OrderByDescending(e => GetReflectedPropertyValue(e, sort.Field).ToUpper()).Skip(page.PageNumber * page.ItemsPerPage).Take(page.ItemsPerPage).ToList();
+                data = data.Skip(page.PageNumber * page.ItemsPerPage).Take(page.ItemsPerPage).ToList();
             }
 
             return data;
@@ -68,24 +82,37 @@ namespace review_api.Database
         public T FindRecordById<T>(string table, Guid id)
         {
             var collection = db.GetCollection<T>(table);
+
             var queryBuilder = Builders<T>.Filter;
+
             var mongoFilters = queryBuilder.Eq("_id", id);
             mongoFilters &= queryBuilder.Eq("Deleted", false);
+
             return collection.Find(mongoFilters).FirstOrDefault();
         }
 
         public T FindDeletedRecordById<T>(string table, Guid id)
         {
             var collection = db.GetCollection<T>(table);
-            var filter = Builders<T>.Filter.Eq("_id", id);
-            return collection.Find(filter).FirstOrDefault();
+
+            var queryBuilder = Builders<T>.Filter;
+
+            var mongoFilters = queryBuilder.Eq("_id", id);
+            mongoFilters &= queryBuilder.Eq("Deleted", true);
+
+            return collection.Find(mongoFilters).FirstOrDefault();
         }
 
         public string RemoveRecordById<T>(string table, Guid id)
         {
             var collection = db.GetCollection<T>(table);
-            var filter = Builders<T>.Filter.Eq("_id", id);
-            return collection.DeleteOne(filter).ToString();
+
+            var queryBuilder = Builders<T>.Filter;
+
+            var mongoFilters = queryBuilder.Eq("_id", id);
+            mongoFilters &= queryBuilder.Eq("Deleted", false);
+
+            return collection.DeleteOne(mongoFilters).ToString();
         }
 
         public static string GetReflectedPropertyValue(object subject, string field)

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace comment_api.Models.Response
 {
@@ -7,14 +8,15 @@ namespace comment_api.Models.Response
         public string Message { get; set; }
         public string ErrorCode { get; set; }
         public string Exception { get; set; }
-        public Guid? UserId { get; set; }
         public DateTime Time { get; set; }
-        public Failure(string message, string errorCode, string exception, Guid? userId)
+        public List<object> ExtraValues { get; set; }
+
+        public Failure(string message, string errorCode, string exception, List<object> extraValues)
         {
             Message = message;
             ErrorCode = errorCode;
             Exception = exception;
-            UserId = userId;
+            ExtraValues = extraValues;
             Time = DateTime.Now;
         }
         public Failure(string message, string errorCode, string exception)
@@ -22,7 +24,7 @@ namespace comment_api.Models.Response
             Message = message;
             ErrorCode = errorCode;
             Exception = exception;
-            UserId = null;
+            ExtraValues = null;
             Time = DateTime.Now;
         }
     }

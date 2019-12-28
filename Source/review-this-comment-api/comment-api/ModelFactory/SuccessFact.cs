@@ -1,37 +1,34 @@
 ﻿using comment_api.Models.Response;
 using System;
+using System.Collections.Generic;
 
 namespace comment_api.ModelFactory
 {
-    public class SuccessFact
+    public static class SuccessFact
     {
-        public static Success ReviewCreated(Guid? reviewId, Guid? userId)
+        public static Success CommentCreated(Guid? commentId, Guid? userId)
         {
-            return new Success("Review created successfully", "REVIEW_CREATED", reviewId, userId);
+            return new Success("Comment created successfully", "COMMENT_CREATED", new List<object>() { commentId, userId });
         }
-        public static Success AllReviewsRetrieved(Guid? userId)
+        public static Success CommentsByReviewRetrieved(Guid? reviewId, Guid? userId)
         {
-            return new Success("All reviews successfully retrieved", "ALL_PARTIAL_REVEWS_RETRIEVED", null, userId);
+            return new Success("Comments successfully retrieved", "COMMENTS_BY_REVIEW_RETRIEVED", new List<object>() { reviewId, userId });
         }
-        public static Success ReviewRetrieved(Guid? reviewId, Guid? userId)
+        public static Success CommentRetrieved(Guid? commentId, Guid? userId)
         {
-            return new Success("Review successfully retrieved", "SINGLE_COMPLETE_REVIEW_RETRIEVED", reviewId, userId);
+            return new Success("Comment successfully retrieved", "COMMENT_RETRIEVED", new List<object>() { commentId, userId });
         }
-        public static Success ReviewSoftDelete(Guid? reviewId, Guid? userId)
+        public static Success CommentSoftDelete(Guid? commentId, Guid? userId)
         {
-            return new Success("Review successfully deleted", "REVIEW_SOFT_DELETED", reviewId, userId);
+            return new Success("Comment successfully deleted", "COMMENT_SOFT_DELETED", new List<object>() { commentId, userId });
         }
-        public static Success ReviewReinstated(Guid? reviewId, Guid? userId)
+        public static Success CommentReinstated(Guid? commentId, Guid? userId)
         {
-            return new Success("Review successfully reinstated", "REVIEW_REINSTATED", reviewId, userId);
+            return new Success("Comment successfully reinstated", "COMMENT_REINSTATED", new List<object>() { commentId, userId });
         }
-        public static Success ReviewSectionsModified(Guid? reviewId, Guid? userId)
+        public static Success Default(Guid? commentId, Guid? userId)
         {
-            return new Success("Review sections successfully modified", "REVIEW_SECTION_MODIFICATION", reviewId, userId);
-        }
-        public static Success Default(Guid? reviewId, Guid? userId)
-        {
-            return new Success("Completed operation", "REQUEST_FUFILLED", reviewId, userId);
+            return new Success("Completed operation", "REQUEST_FUFILLED", new List<object>() { commentId, userId });
         }
     }
 }

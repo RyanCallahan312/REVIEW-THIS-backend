@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace comment_api.Models.Response
 {
@@ -6,25 +7,14 @@ namespace comment_api.Models.Response
     {
         public string Message { get; set; }
         public string SuccessCode { get; set; }
-        public Guid? ReviewId { get; set; }
-        public Guid? UserId { get; set; }
+        public List<object> ExtraValues { get; set; }
         public DateTime Time { get; set; }
 
-        public Success(string message, string successCode, Guid? reviewId, Guid? userid)
+        public Success(string message, string successCode, List<object> extraValues)
         {
             Message = message;
             SuccessCode = successCode;
-            ReviewId = reviewId;
-            UserId = userid;
-            Time = DateTime.Now;
-        }
-
-        public Success(string message, string successCode, Guid? reviewId)
-        {
-            Message = message;
-            SuccessCode = successCode;
-            ReviewId = reviewId;
-            UserId = null;
+            ExtraValues = extraValues;
             Time = DateTime.Now;
         }
 
@@ -32,8 +22,7 @@ namespace comment_api.Models.Response
         {
             Message = message;
             SuccessCode = successCode;
-            ReviewId = null;
-            UserId = null;
+            ExtraValues = null;
             Time = DateTime.Now;
         }
     }

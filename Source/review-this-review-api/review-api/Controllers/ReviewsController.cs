@@ -16,7 +16,12 @@ namespace review_api.Controllers
     [ApiController]
     public class ReviewsController : ControllerBase
     {
-        private readonly ReviewDB db = new ReviewDB("movie-review");
+        private readonly ReviewDB db = new ReviewDB("movie-review-V1");
+        private readonly string REVIEW_TABLE = "Reviews";
+        private readonly string FAILURE_TABLE = "Failures";
+        private readonly string SUCCESS_TABLE = "Successes";
+        private readonly string UNAUTHORIZED_TABLE = "Unauorized";
+
         // gets a list of partial reviews
         [HttpGet]
         public ActionResult Get([FromQuery(Name = "sortDirection")] string sortDirection = "asc", [FromQuery(Name = "sortField")] string sortField = "Time", [FromQuery(Name = "filterFields")] string filterFields = null, [FromQuery(Name = "filterValues")] string filterValues = null, [FromQuery(Name = "pageNumber")] int pageNumber = 0, [FromQuery(Name = "pageItems")] int pageItems = 10, [FromBody] NullableGuidDeserializer nullableUserId = null)
@@ -33,27 +38,27 @@ namespace review_api.Controllers
             }
             catch (Exception e)
             {
-                Failure failure = FailureFact.UnevenFilters(e, userId);
-                db.InsertRecord("Failures", failure);
+                Failure failure = FailureFact.UnevenFilters(e, userId, filterValues, filterFields);
+                db.InsertRecord(FAILURE_TABLE, failure);
                 return BadRequest(failure);
             }
 
             List<Review> records;
             try
             {
-                records = db.LoadRecords<Review>("Reviews", filters, sort, page);
+                records = db.LoadRecords<Review>(REVIEW_TABLE, filters, sort, page);
             }
             catch (Exception e)
             {
                 Failure failure = FailureFact.Default(e, userId);
-                db.InsertRecord("Failures", failure);
+                db.InsertRecord(FAILURE_TABLE, failure);
                 return StatusCode(500, failure);
             }
 
             if (records.Count == 0)
             {
-                Failure failure = FailureFact.NoRecordsFound(null, userId);
-                db.InsertRecord("Failures", failure);
+                Failure failure = FailureFact.NoRecordsFound(null, userId, sort, filters, page);
+                db.InsertRecord(FAILURE_TABLE, failure);
                 return NotFound(failure);
             }
 
@@ -63,8 +68,8 @@ namespace review_api.Controllers
                 partialRecords.Add(record.ToPartialReview());
             }
 
-            Success success = SuccessFact.AllReviewsRetrieved(userId);
-            db.InsertRecord("Successes", success);
+            Success success = SuccessFact.ReviewsRetrieved(userId, sort, page, filters);
+            db.InsertRecord(SUCCESS_TABLE, success);
 
             return new OkObjectResult(partialRecords);
         }
@@ -79,24 +84,24 @@ namespace review_api.Controllers
             Review record;
             try
             {
-                record = db.FindRecordById<Review>("Reviews", reviewId);
+                record = db.FindRecordById<Review>(REVIEW_TABLE, reviewId);
             }
             catch (Exception e)
             {
                 Failure failure = FailureFact.Default(e, userId);
-                db.InsertRecord("Failures", failure);
+                db.InsertRecord(FAILURE_TABLE, failure);
                 return StatusCode(500, failure);
             }
 
             if (record == null)
             {
-                Failure failure = FailureFact.IdNotFound(null, userId);
-                db.InsertRecord("Failures", failure);
+                Failure failure = FailureFact.IdNotFound(null, userId, reviewId);
+                db.InsertRecord(FAILURE_TABLE, failure);
                 return NotFound(failure);
             }
 
             Success success = SuccessFact.ReviewRetrieved(reviewId, userId);
-            db.InsertRecord("Successes", success);
+            db.InsertRecord(SUCCESS_TABLE, success);
 
             return new OkObjectResult(record);
         }
@@ -107,17 +112,17 @@ namespace review_api.Controllers
         {
             try
             {
-                db.InsertRecord("Reviews", value);
+                db.InsertRecord(REVIEW_TABLE, value);
             }
             catch (Exception e)
             {
                 Failure failure = FailureFact.Default(e, value.UserId);
-                db.InsertRecord("Failures", failure);
+                db.InsertRecord(FAILURE_TABLE, failure);
                 return StatusCode(500, failure);
             }
 
             Success success = SuccessFact.ReviewCreated(value.ReviewId, value.UserId);
-            db.InsertRecord("Successes", success);
+            db.InsertRecord(SUCCESS_TABLE, success);
             return new OkObjectResult(success);
         }
 
@@ -133,8 +138,8 @@ namespace review_api.Controllers
             }
             catch (Exception e)
             {
-                Failure failure = FailureFact.BadUserId(e, null);
-                db.InsertRecord("Failures", failure);
+                Failure failure = FailureFact.BadUserId(e, value["userId"]);
+                db.InsertRecord(FAILURE_TABLE, failure);
                 return BadRequest(failure);
             }
 
@@ -153,27 +158,27 @@ namespace review_api.Controllers
             }
             catch (Exception e)
             {
-                Failure failure = FailureFact.BadRequestBody(e, userId);
-                db.InsertRecord("Failures", failure);
+                Failure failure = FailureFact.BadRequestBody(e, userId, value["sections"]);
+                db.InsertRecord(FAILURE_TABLE, failure);
                 return BadRequest(failure);
             }
 
             Review record;
             try
             {
-                record = db.FindRecordById<Review>("Reviews", reviewId);
+                record = db.FindRecordById<Review>(REVIEW_TABLE, reviewId);
             }
             catch (Exception e)
             {
                 Failure failure = FailureFact.Default(e, userId);
-                db.InsertRecord("Failures", failure);
+                db.InsertRecord(FAILURE_TABLE, failure);
                 return StatusCode(500, failure);
             }
 
             if (record == null)
             {
-                Failure failure = FailureFact.IdNotFound(null, userId);
-                db.InsertRecord("Failures", failure);
+                Failure failure = FailureFact.IdNotFound(null, userId, reviewId);
+                db.InsertRecord(FAILURE_TABLE, failure);
                 return NotFound(failure);
             }
 
@@ -186,10 +191,10 @@ namespace review_api.Controllers
                 record.SetComments(comments, userId);
             }
 
-            db.PutRecord("Reviews", value, reviewId);
+            db.PutRecord(REVIEW_TABLE, value, reviewId);
 
-            Success success = SuccessFact.ReviewSectionsModified(reviewId, userId);
-            db.InsertRecord("Successes", success);
+            Success success = SuccessFact.ReviewSectionsModified(reviewId, userId, sections);
+            db.InsertRecord(SUCCESS_TABLE, success);
             return new OkObjectResult(success);
         }
 
@@ -205,36 +210,36 @@ namespace review_api.Controllers
             catch (Exception e)
             {
                 Failure failure = FailureFact.BadUserId(e, null);
-                db.InsertRecord("Failures", failure);
+                db.InsertRecord(FAILURE_TABLE, failure);
                 return BadRequest(failure);
             }
 
             Review record;
             try
             {
-                record = db.FindRecordById<Review>("Reviews", reviewId);
+                record = db.FindRecordById<Review>(REVIEW_TABLE, reviewId);
             }
             catch (Exception e)
             {
                 Failure failure = FailureFact.BadUserId(e, null);
-                db.InsertRecord("Failures", failure);
+                db.InsertRecord(FAILURE_TABLE, failure);
                 return BadRequest(failure);
             }
 
             if (record == null)
             {
-                Failure failure = FailureFact.IdNotFound(null, userId);
-                db.InsertRecord("Failures", failure);
+                Failure failure = FailureFact.IdNotFound(null, userId, reviewId);
+                db.InsertRecord(FAILURE_TABLE, failure);
                 return NotFound(failure);
             }
             else
             {
                 record.Delete(Guid.Empty);
-                db.PutRecord("Reviews", record, reviewId);
+                db.PutRecord(REVIEW_TABLE, record, reviewId);
             }
 
             Success success = SuccessFact.ReviewSoftDelete(reviewId, userId);
-            db.InsertRecord("Successes", success);
+            db.InsertRecord(SUCCESS_TABLE, success);
             return new OkObjectResult(success);
         }
 
@@ -250,36 +255,36 @@ namespace review_api.Controllers
             catch (Exception e)
             {
                 Failure failure = FailureFact.BadUserId(e, null);
-                db.InsertRecord("Failures", failure);
+                db.InsertRecord(FAILURE_TABLE, failure);
                 return BadRequest(failure);
             }
 
             Review record;
             try
             {
-                record = db.FindDeletedRecordById<Review>("Reviews", reviewId);
+                record = db.FindDeletedRecordById<Review>(REVIEW_TABLE, reviewId);
             }
             catch (Exception e)
             {
                 Failure failure = FailureFact.Default(e, userId);
-                db.InsertRecord("Failures", failure);
+                db.InsertRecord(FAILURE_TABLE, failure);
                 return StatusCode(500, failure);
             }
 
             if (record == null)
             {
-                Failure failure = FailureFact.IdNotFound(null, userId);
-                db.InsertRecord("Failures", failure);
+                Failure failure = FailureFact.IdNotFound(null, userId, reviewId);
+                db.InsertRecord(FAILURE_TABLE, failure);
                 return NotFound(failure);
             }
             else
             {
                 record.ReInstate(Guid.Empty);
-                db.PutRecord("Reviews", record, reviewId);
+                db.PutRecord(REVIEW_TABLE, record, reviewId);
             }
 
             Success success = SuccessFact.ReviewReinstated(reviewId, userId);
-            db.InsertRecord("Successes", success);
+            db.InsertRecord(SUCCESS_TABLE, success);
             return new OkObjectResult(success);
         }
     }

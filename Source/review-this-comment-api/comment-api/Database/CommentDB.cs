@@ -2,18 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using MongoDB.Driver;
+using review_api.Models.Query;
 
-namespace Review_Api.Database
+namespace comment_api.Database
 {
-    public class ReviewDB
+    public class CommentDb
     {
         private readonly IMongoDatabase db;
 
-        public ReviewDB(string database)
+        public CommentDb(string database)
         {
             var client = new MongoClient();
             db = client.GetDatabase(database);
         }
+
         public void InsertRecord<T>(string table, T record)
         {
             var collection = db.GetCollection<T>(table);
@@ -28,16 +30,53 @@ namespace Review_Api.Database
             collection.ReplaceOne(mongoFilters, record);
         }
 
-        public List<T> LoadRecords<T>(string table, List<Guid> commentIds)
+        public List<T> LoadRecords<T>(string table, List<Filter> filters, Sort sort, Page page)
         {
             var collection = db.GetCollection<T>(table);
+            FilterDefinition<T> mongoFilters;
 
-            var queryBuilder = Builders<T>.Filter;
+            //make filters
+            if (filters != null && filters.Count > 0)
+            {
+                var queryBuilder = Builders<T>.Filter;
+                mongoFilters = queryBuilder.Eq(filters[0].Field, filters[0].Value);
 
-            var mongoFilters = queryBuilder.In("_id", commentIds);
-            mongoFilters &= queryBuilder.Eq("Deleted", false);
+                foreach (Filter filter in filters)
+                {
+                    mongoFilters |= queryBuilder.Eq(filter.Field, filter.Value);
+                }
 
-            return collection.Find(mongoFilters).ToList();
+                mongoFilters |= queryBuilder.Eq("Deleted", false);
+            }
+            else
+            {
+                mongoFilters = Builders<T>.Filter.Eq("Deleted", false);
+            }
+
+            //get data
+            List<T> data = collection.Find(mongoFilters).ToList();
+
+
+            //sort data
+            if (sort != null)
+            {
+                if (sort.Direction == "asc")
+                {
+                    data = data.AsQueryable().OrderBy(e => GetReflectedPropertyValue(e, sort.Field).ToUpper()).ToList();
+                }
+                else
+                {
+                    data = data.AsQueryable().OrderByDescending(e => GetReflectedPropertyValue(e, sort.Field).ToUpper()).ToList();
+                }
+            }
+
+            //paginate data
+            if (page != null)
+            {
+                data = data.Skip(page.PageNumber * page.ItemsPerPage).Take(page.ItemsPerPage).ToList();
+            }
+
+            return data;
         }
 
         public T FindRecordById<T>(string table, Guid id)
@@ -55,15 +94,25 @@ namespace Review_Api.Database
         public T FindDeletedRecordById<T>(string table, Guid id)
         {
             var collection = db.GetCollection<T>(table);
-            var filter = Builders<T>.Filter.Eq("_id", id);
-            return collection.Find(filter).FirstOrDefault();
+
+            var queryBuilder = Builders<T>.Filter;
+
+            var mongoFilters = queryBuilder.Eq("_id", id);
+            mongoFilters &= queryBuilder.Eq("Deleted", true);
+
+            return collection.Find(mongoFilters).FirstOrDefault();
         }
 
         public string RemoveRecordById<T>(string table, Guid id)
         {
             var collection = db.GetCollection<T>(table);
-            var filter = Builders<T>.Filter.Eq("_id", id);
-            return collection.DeleteOne(filter).ToString();
+
+            var queryBuilder = Builders<T>.Filter;
+
+            var mongoFilters = queryBuilder.Eq("_id", id);
+            mongoFilters &= queryBuilder.Eq("Deleted", false);
+
+            return collection.DeleteOne(mongoFilters).ToString();
         }
 
         public static string GetReflectedPropertyValue(object subject, string field)
