@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using comment_api.Models;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace comment_api.Models
