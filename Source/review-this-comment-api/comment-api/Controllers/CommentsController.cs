@@ -47,7 +47,7 @@ namespace comment_api.Controllers
 
             if (records == null)
             {
-                Failure failure = FailureFact.IdNotFound(null, userId);
+                Failure failure = FailureFact.NoRecordsFound(null, userId, null, filters, null);
                 db.InsertRecord(FAILURE_TABLE, failure);
                 return NotFound(failure);
             }
@@ -80,7 +80,7 @@ namespace comment_api.Controllers
 
             if (record == null)
             {
-                Failure failure = FailureFact.IdNotFound(null, userId);
+                Failure failure = FailureFact.IdNotFound(null, userId, commentId);
                 db.InsertRecord(FAILURE_TABLE, failure);
                 return NotFound(failure);
             }
