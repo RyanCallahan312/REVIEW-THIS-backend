@@ -1,568 +1,656 @@
 {
-    "openapi": "3.0.0",
-    "info": {
-        "title": "Review Api",
-        "description": "A review microservice api to be used in conjunction with other comment, user, and auth microservices.",
-        "version": "0.1.0"
+  "openapi" : "3.0.2",
+  "info" : {
+    "title" : "REVIEW THIS! review api",
+    "description" : "This is a the review api designed for use in Review This!",
+    "version" : "0.2.1",
+    "contact" : {
+      "email" : "RyanCallahan312@gmail.com"
     },
-    "servers": [
-        {
-            "url": "https://localhost:43080/api",
-            "description": "dev local url"
-        }
-    ],
-    "paths": {
-        "/reviews": {
-            "get": {
-                "summary": "returns a list of partial reviews",
-                "description": "returns a paginated list of all reviews by sort and filters. Default sort is newest. Default filter is none. Default pagination is page one with 25 items.",
-                "parameters": [
-                    {
-                        "in": "query",
-                        "name": "sortDirection",
-                        "required": false,
-                        "schema": {
-                            "type": "string"
-                        },
-                        "description": "describes the sort direction"
-                    },
-                    {
-                        "in": "query",
-                        "name": "sortField",
-                        "required": false,
-                        "schema": {
-                            "type": "string"
-                        },
-                        "description": "describes the sort field"
-                    },
-                    {
-                        "in": "query",
-                        "name": "filterFields",
-                        "required": false,
-                        "schema": {
-                            "type": "string"
-                        },
-                        "description": "describes the filter fields"
-                    },
-                    {
-                        "in": "query",
-                        "name": "filterValues",
-                        "required": false,
-                        "schema": {
-                            "type": "string"
-                        },
-                        "description": "describes the filter values"
-                    },
-                    {
-                        "in": "query",
-                        "name": "pageNumber",
-                        "required": false,
-                        "schema": {
-                            "type": "integer"
-                        },
-                        "description": "describes the page number"
-                    },
-                    {
-                        "in": "query",
-                        "name": "pageItems",
-                        "required": false,
-                        "schema": {
-                            "type": "string"
-                        },
-                        "description": "describes the items per page"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "A JSON array of movie review objects",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/review"
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "unauthroized user",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/unauthorized"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "internal server error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/internalError"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "post": {
-                "summary": "Create a new movie review",
-                "description": "creates a new post by the user id",
-                "parameters": [],
-                "requestBody": {
-                    "description": "the content of the new review and with user info",
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "type": "object",
-                            "properties": {
-                                "userId": {
-                                    "type": "string"
-                                },
-                                "$ref": "#/components/schemas/submittedReview"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Post sucessfully created",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/successObject"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "unauthroized user",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/unauthorized"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "internal server error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/internalError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/reviews/{id}": {
-            "get": {
-                "summary": "returns a single complete review",
-                "description": "returns a complete review object",
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "id",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        },
-                        "description": "review id to get"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "A JSON object of movie review objects",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/review"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "unauthroized user",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/unauthorized"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "internal server error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/internalError"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "put": {
-                "summary": "update a movie reivew",
-                "description": "updates a movie review.",
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "id",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/components/schemas/sort"
-                        },
-                        "description": "review id to update"
-                    }
-                ],
-                "requestBody": {
-                    "description": "the user updating the review and the updated review",
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "type": "object",
-                            "properties": {
-                                "userId": {
-                                    "type": "string"
-                                },
-                                "$ref": "#/components/schemas/submittedReview"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Post sucessfully deleted",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/successObject"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "unauthorized user",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/unauthorized"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "internal server error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/internalError"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "patch": {
-                "summary": "un-delete a movie reivew",
-                "description": "un-deletes a movie review.",
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "id",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/components/schemas/sort"
-                        },
-                        "description": "review id to un-delete"
-                    }
-                ],
-                "requestBody": {
-                    "description": "the user un-deleting the review",
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "type": "object",
-                            "properties": {
-                                "userId": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Post sucessfully un-deleted",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/successObject"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "unauthorized user",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/unauthorized"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "internal server error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/internalError"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "del": {
-                "summary": "delete a movie reivew",
-                "description": "deletes a movie review.",
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "id",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/components/schemas/sort"
-                        },
-                        "description": "review id to delete"
-                    }
-                ],
-                "requestBody": {
-                    "description": "the user deleteing the review",
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "type": "object",
-                            "properties": {
-                                "userId": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Post sucessfully deleted",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/successObject"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "unauthorized user",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/unauthorized"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "internal server error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/internalError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    },
-    "components": {
-        "schemas": {
-            "review": {
-                "type": "object",
-                "properties": {
-                    "reviewId": { "type": "string" },
-                    "userId": { "type": "string" },
-                    "author": { "type": "string" },
-                    "time": { "type": "string", "format": "date-time" },
-                    "movie": { "type": "string" },
-                    "genre": { "type": "string" },
-                    "rating": { "type": "float" },
-                    "headline": { "type": "string" },
-                    "sections": {
-                        "type": "array",
-                        "items": {
-                            "type": "object",
-                            "properties": {
-                                "header": { "type": "string" },
-                                "body": { "type": "string" }
-                            }
-                        }
-                    },
-                    "modifications": {
-                        "type": "array",
-                        "items": {
-                            "type": "object",
-                            "properties": {
-                                "time": {
-                                    "type": "string",
-                                    "format": "date-time"
-                                },
-                                "headline": { "type": "string" },
-                                "sections": {
-                                    "type": "array",
-                                    "items": {
-                                        "type": "object",
-                                        "properties": {
-                                            "header": { "type": "string" },
-                                            "body": { "type": "string" }
-                                        }
-                                    }
-                                },
-                                "rating": { "type": "float" }
-                            }
-                        }
-                    },
-                    "deletions": {
-                        "type": "array",
-                        "items": {
-                            "type": "object",
-                            "properties": {
-                                "deleted": { "type": "boolean" },
-                                "user": { "type": "string" },
-                                "time": {
-                                    "type": "string",
-                                    "format": "date-time"
-                                }
-                            }
-                        }
-                    },
-                    "deleted": { "type": "boolean" },
-                    "comments": {
-                        "type": "array",
-                        "items": { "type": "string" }
-                    }
-                }
-            },
-            "partialReview": {
-                "type": "object",
-                "properties": {
-                    "reviewId": { "type": "string" },
-                    "userId": { "type": "string" },
-                    "author": { "type": "string" },
-                    "time": { "type": "string", "format": "date-time" },
-                    "movie": { "type": "string" },
-                    "genre": { "type": "string" },
-                    "rating": { "type": "float" },
-                    "headline": { "type": "string" }
-                }
-            },
-            "unauthorized": {
-                "type": "object",
-                "properties": {
-                    "message": { "type": "string" },
-                    "errorCode": { "type": "string" },
-                    "userId": { "type": "string" },
-                    "time": { "type": "string", "format": "date-time" }
-                }
-            },
-            "internalError": {
-                "type": "object",
-                "properties": {
-                    "message": { "type": "string" },
-                    "errorCode": { "type": "string" },
-                    "exception": { "type": "string" },
-                    "reviewId": { "type": "string" },
-                    "userId": { "type": "string" },
-                    "time": { "type": "string", "format": "date-time" }
-                }
-            },
-            "filters": {
-                "type": "array",
-                "items": {
-                    "type": "object",
-                    "properties": {
-                        "field": {
-                            "type": "string"
-                        },
-                        "value": {
-                            "type": "string"
-                        }
-                    }
-                }
-            },
-            "sort": {
-                "type": "Object",
-                "properties": {
-                    "direction": {
-                        "type": "string"
-                    },
-                    "field": {
-                        "type": "string"
-                    }
-                }
-            },
-            "pagination": {
-                "type": "object",
-                "properties": {
-                    "page": {
-                        "type": "integer"
-                    },
-                    "items": {
-                        "type": "integer"
-                    }
-                }
-            },
-            "successObject": {
-                "type": "object",
-                "properties": {
-                    "message": { "type": "string" },
-                    "successCode": { "type": "string" },
-                    "reviewId": { "type": "string" },
-                    "userId": { "type": "string" },
-                    "time": { "type": "string", "format": "date-time" }
-                }
-            },
-            "submittedReview": {
-                "type": "object",
-                "properties": {
-                    "userId": { "type": "string" },
-                    "author": { "type": "string" },
-                    "movie": { "type": "string" },
-                    "genre": { "type": "string" },
-                    "rating": { "type": "float" },
-                    "headline": { "type": "string" },
-                    "sections": {
-                        "type": "aray",
-                        "items": {
-                            "type": "object",
-                            "properties": {
-                                "header": { "type": "string" },
-                                "body": { "type": "string" }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+    "license" : {
+      "name" : "MIT",
+      "url" : "https://opensource.org/licenses/MIT"
     }
+  },
+  "servers" : [ {
+    "description" : "SwaggerHub API Auto Mocking",
+    "url" : "https://virtserver.swaggerhub.com/REVIEW-THIS/review-api/0.2.1"
+  }, {
+    "description" : "Local Dev URL",
+    "url" : "https://localhost:43080/api"
+  } ],
+  "tags" : [ {
+    "name" : "reviews",
+    "description" : "get a list of reviews or create a new review"
+  }, {
+    "name" : "reviews by id",
+    "description" : "on a particular review do one of the following \ndelete, reinstate, modify, or get\n"
+  } ],
+  "paths" : {
+    "/reviews" : {
+      "get" : {
+        "tags" : [ "reviews" ],
+        "summary" : "returns a list of partial reviews",
+        "operationId" : "getReviews",
+        "description" : "returns a paginated list of all reviews by sort and filters. Default sort is newest first. Default filter is none. Default pagination is page one with 25 items.",
+        "parameters" : [ {
+          "in" : "query",
+          "name" : "sortDirection",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "description" : "describes the sort direction"
+        }, {
+          "in" : "query",
+          "name" : "sortField",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "description" : "describes the sort field"
+        }, {
+          "in" : "query",
+          "name" : "filterFields",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "description" : "describes the filter fields"
+        }, {
+          "in" : "query",
+          "name" : "filterValues",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "description" : "describes the filter values"
+        }, {
+          "in" : "query",
+          "name" : "pageNumber",
+          "required" : false,
+          "schema" : {
+            "type" : "integer"
+          },
+          "description" : "describes the page number"
+        }, {
+          "in" : "query",
+          "name" : "pageItems",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "description" : "describes the items per page"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successfully returns a JSON array of partial movie review objects",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/partialReview"
+                  }
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Failure: unauthorized user",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unauthorized"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Failure: no content found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/internalError"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Failure: internal server error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/internalError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "reviews" ],
+        "summary" : "Create a new movie review",
+        "description" : "creates a new post by the user id",
+        "parameters" : [ ],
+        "requestBody" : {
+          "description" : "the content of the new review and with user info",
+          "required" : true,
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "type" : "object",
+                "properties" : {
+                  "userId" : {
+                    "type" : "string"
+                  },
+                  "submittedReview" : {
+                    "$ref" : "#/components/schemas/submittedReview"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Post sucessfully created",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/successObject"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "unauthroized user",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unauthorized"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "internal server error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/internalError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/reviews/{reviewId}" : {
+      "get" : {
+        "tags" : [ "reviews by id" ],
+        "summary" : "returns a single complete review",
+        "description" : "returns a complete review object",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "reviewId",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "description" : "review id to get"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "A JSON object of movie review objects",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/review"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "unauthroized user",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unauthorized"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "internal server error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/internalError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "reviews by id" ],
+        "summary" : "update a movie reivew",
+        "description" : "updates a movie review.",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "reviewId",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "description" : "review id to update"
+        } ],
+        "requestBody" : {
+          "description" : "the user updating the review and the updated review",
+          "required" : true,
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "type" : "object",
+                "properties" : {
+                  "userId" : {
+                    "type" : "string"
+                  },
+                  "submittedReview" : {
+                    "$ref" : "#/components/schemas/submittedReview"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Post sucessfully deleted",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/successObject"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "unauthorized user",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unauthorized"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "internal server error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/internalError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch" : {
+        "tags" : [ "reviews by id" ],
+        "summary" : "un-delete a movie reivew",
+        "description" : "un-deletes a movie review.",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "reviewId",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "description" : "review id to un-delete"
+        } ],
+        "requestBody" : {
+          "description" : "the user un-deleting the review",
+          "required" : true,
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "type" : "object",
+                "properties" : {
+                  "userId" : {
+                    "type" : "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Post sucessfully un-deleted",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/successObject"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "unauthorized user",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unauthorized"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "internal server error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/internalError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "reviews by id" ],
+        "summary" : "delete a movie reivew",
+        "description" : "deletes a movie review.",
+        "parameters" : [ {
+          "in" : "query",
+          "name" : "userId",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "description" : "passing user id via query string until open api v3.0.3"
+        }, {
+          "in" : "path",
+          "name" : "reviewId",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "description" : "review id to delete"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Post sucessfully deleted",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/successObject"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "unauthorized user",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unauthorized"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "internal server error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/internalError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "review" : {
+        "type" : "object",
+        "properties" : {
+          "reviewId" : {
+            "type" : "string"
+          },
+          "userId" : {
+            "type" : "string"
+          },
+          "author" : {
+            "type" : "string"
+          },
+          "time" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "movie" : {
+            "type" : "string"
+          },
+          "genre" : {
+            "type" : "string"
+          },
+          "rating" : {
+            "type" : "number"
+          },
+          "headline" : {
+            "type" : "string"
+          },
+          "sections" : {
+            "type" : "array",
+            "items" : {
+              "type" : "object",
+              "properties" : {
+                "header" : {
+                  "type" : "string"
+                },
+                "body" : {
+                  "type" : "string"
+                }
+              }
+            }
+          },
+          "modifications" : {
+            "type" : "array",
+            "items" : {
+              "type" : "object",
+              "properties" : {
+                "time" : {
+                  "type" : "string",
+                  "format" : "date-time"
+                },
+                "headline" : {
+                  "type" : "string"
+                },
+                "sections" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "object",
+                    "properties" : {
+                      "header" : {
+                        "type" : "string"
+                      },
+                      "body" : {
+                        "type" : "string"
+                      }
+                    }
+                  }
+                },
+                "rating" : {
+                  "type" : "number"
+                }
+              }
+            }
+          },
+          "deletions" : {
+            "type" : "array",
+            "items" : {
+              "type" : "object",
+              "properties" : {
+                "deleted" : {
+                  "type" : "boolean"
+                },
+                "user" : {
+                  "type" : "string"
+                },
+                "time" : {
+                  "type" : "string",
+                  "format" : "date-time"
+                }
+              }
+            }
+          },
+          "deleted" : {
+            "type" : "boolean"
+          },
+          "comments" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }
+      },
+      "partialReview" : {
+        "type" : "object",
+        "properties" : {
+          "reviewId" : {
+            "type" : "string"
+          },
+          "userId" : {
+            "type" : "string"
+          },
+          "author" : {
+            "type" : "string"
+          },
+          "time" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "movie" : {
+            "type" : "string"
+          },
+          "genre" : {
+            "type" : "string"
+          },
+          "rating" : {
+            "type" : "number"
+          },
+          "headline" : {
+            "type" : "string"
+          }
+        }
+      },
+      "unauthorized" : {
+        "type" : "object",
+        "properties" : {
+          "message" : {
+            "type" : "string"
+          },
+          "errorCode" : {
+            "type" : "string"
+          },
+          "userId" : {
+            "type" : "string"
+          },
+          "time" : {
+            "type" : "string",
+            "format" : "date-time"
+          }
+        }
+      },
+      "internalError" : {
+        "type" : "object",
+        "properties" : {
+          "message" : {
+            "type" : "string"
+          },
+          "errorCode" : {
+            "type" : "string"
+          },
+          "exception" : {
+            "type" : "string"
+          },
+          "info" : {
+            "type" : "array",
+            "items" : {
+              "type" : "object"
+            }
+          },
+          "time" : {
+            "type" : "string",
+            "format" : "date-time"
+          }
+        }
+      },
+      "successObject" : {
+        "type" : "object",
+        "properties" : {
+          "message" : {
+            "type" : "string"
+          },
+          "successCode" : {
+            "type" : "string"
+          },
+          "info" : {
+            "type" : "array",
+            "items" : {
+              "type" : "object"
+            }
+          },
+          "time" : {
+            "type" : "string",
+            "format" : "date-time"
+          }
+        }
+      },
+      "submittedReview" : {
+        "type" : "object",
+        "properties" : {
+          "userId" : {
+            "type" : "string"
+          },
+          "author" : {
+            "type" : "string"
+          },
+          "movie" : {
+            "type" : "string"
+          },
+          "genre" : {
+            "type" : "string"
+          },
+          "rating" : {
+            "type" : "number"
+          },
+          "headline" : {
+            "type" : "string"
+          },
+          "sections" : {
+            "type" : "array",
+            "items" : {
+              "type" : "object",
+              "properties" : {
+                "header" : {
+                  "type" : "string"
+                },
+                "body" : {
+                  "type" : "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }
