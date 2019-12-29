@@ -12,7 +12,7 @@ using review_api.Models.Response;
 namespace review_api.Controllers
 {
 
-    [Route("api/reveiws")]
+    [Route("api-v1/reveiws")]
     [ApiController]
     public class ReviewsController : ControllerBase
     {

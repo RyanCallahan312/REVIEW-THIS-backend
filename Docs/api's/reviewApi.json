@@ -3,7 +3,7 @@
   "info" : {
     "title" : "REVIEW THIS! review api",
     "description" : "This is a the review api designed for use in Review This!",
-    "version" : "0.2.1",
+    "version" : "0.2.2",
     "contact" : {
       "email" : "RyanCallahan312@gmail.com"
     },
@@ -14,10 +14,10 @@
   },
   "servers" : [ {
     "description" : "SwaggerHub API Auto Mocking",
-    "url" : "https://virtserver.swaggerhub.com/REVIEW-THIS/review-api/0.2.1"
+    "url" : "https://virtserver.swaggerhub.com/REVIEW-THIS/review-api/0.2.2"
   }, {
     "description" : "Local Dev URL",
-    "url" : "https://localhost:43080/api"
+    "url" : "https://localhost:43080/api-v1"
   } ],
   "tags" : [ {
     "name" : "reviews",
@@ -96,6 +96,16 @@
               }
             }
           },
+          "400" : {
+            "description" : "Failure: Bad request",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/failure"
+                }
+              }
+            }
+          },
           "401" : {
             "description" : "Failure: unauthorized user",
             "content" : {
@@ -111,7 +121,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/internalError"
+                  "$ref" : "#/components/schemas/failure"
                 }
               }
             }
@@ -121,7 +131,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/internalError"
+                  "$ref" : "#/components/schemas/failure"
                 }
               }
             }
@@ -131,10 +141,10 @@
       "post" : {
         "tags" : [ "reviews" ],
         "summary" : "Create a new movie review",
-        "description" : "creates a new post by the user id",
+        "description" : "creates a new movie review from a specified user",
         "parameters" : [ ],
         "requestBody" : {
-          "description" : "the content of the new review and with user info",
+          "description" : "the content of the new review and user id",
           "required" : true,
           "content" : {
             "application/json" : {
@@ -142,7 +152,8 @@
                 "type" : "object",
                 "properties" : {
                   "userId" : {
-                    "type" : "string"
+                    "type" : "string",
+                    "format" : "uuid"
                   },
                   "submittedReview" : {
                     "$ref" : "#/components/schemas/submittedReview"
@@ -158,13 +169,23 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/successObject"
+                  "$ref" : "#/components/schemas/success"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Failure: Bad request",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/failure"
                 }
               }
             }
           },
           "401" : {
-            "description" : "unauthroized user",
+            "description" : "Failure: unauthorized user",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -173,12 +194,22 @@
               }
             }
           },
-          "500" : {
-            "description" : "internal server error",
+          "404" : {
+            "description" : "Failure: no content found",
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/internalError"
+                  "$ref" : "#/components/schemas/failure"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Failure: internal server error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/failure"
                 }
               }
             }
@@ -189,20 +220,21 @@
     "/reviews/{reviewId}" : {
       "get" : {
         "tags" : [ "reviews by id" ],
-        "summary" : "returns a single complete review",
-        "description" : "returns a complete review object",
+        "summary" : "gets a complete review object",
+        "description" : "returns a complete review specified by the reviewId",
         "parameters" : [ {
           "in" : "path",
           "name" : "reviewId",
           "required" : true,
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "format" : "uuid"
           },
           "description" : "review id to get"
         } ],
         "responses" : {
           "200" : {
-            "description" : "A JSON object of movie review objects",
+            "description" : "A single complete review",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -211,8 +243,18 @@
               }
             }
           },
+          "400" : {
+            "description" : "Failure: Bad request",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/failure"
+                }
+              }
+            }
+          },
           "401" : {
-            "description" : "unauthroized user",
+            "description" : "Failure: unauthroized user",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -221,12 +263,22 @@
               }
             }
           },
-          "500" : {
-            "description" : "internal server error",
+          "404" : {
+            "description" : "Failure: no content found",
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/internalError"
+                  "$ref" : "#/components/schemas/failure"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Failure: internal server error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/failure"
                 }
               }
             }
@@ -236,18 +288,19 @@
       "put" : {
         "tags" : [ "reviews by id" ],
         "summary" : "update a movie reivew",
-        "description" : "updates a movie review.",
+        "description" : "updates a movie review's sections, rating, and/or headline",
         "parameters" : [ {
           "in" : "path",
           "name" : "reviewId",
           "required" : true,
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "format" : "uuid"
           },
           "description" : "review id to update"
         } ],
         "requestBody" : {
-          "description" : "the user updating the review and the updated review",
+          "description" : "the user updating the review and the\nupdated submitted review\n",
           "required" : true,
           "content" : {
             "application/json" : {
@@ -255,7 +308,8 @@
                 "type" : "object",
                 "properties" : {
                   "userId" : {
-                    "type" : "string"
+                    "type" : "string",
+                    "format" : "uuid"
                   },
                   "submittedReview" : {
                     "$ref" : "#/components/schemas/submittedReview"
@@ -267,17 +321,27 @@
         },
         "responses" : {
           "200" : {
-            "description" : "Post sucessfully deleted",
+            "description" : "Post sucessfully updated",
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/successObject"
+                  "$ref" : "#/components/schemas/success"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Failure: Bad request",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/failure"
                 }
               }
             }
           },
           "401" : {
-            "description" : "unauthorized user",
+            "description" : "Failure: unauthroized user",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -286,12 +350,22 @@
               }
             }
           },
-          "500" : {
-            "description" : "internal server error",
+          "404" : {
+            "description" : "Failure: no content found",
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/internalError"
+                  "$ref" : "#/components/schemas/failure"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Failure: internal server error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/failure"
                 }
               }
             }
@@ -307,7 +381,8 @@
           "name" : "reviewId",
           "required" : true,
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "format" : "uuid"
           },
           "description" : "review id to un-delete"
         } ],
@@ -320,7 +395,8 @@
                 "type" : "object",
                 "properties" : {
                   "userId" : {
-                    "type" : "string"
+                    "type" : "string",
+                    "format" : "uuid"
                   }
                 }
               }
@@ -329,17 +405,27 @@
         },
         "responses" : {
           "200" : {
-            "description" : "Post sucessfully un-deleted",
+            "description" : "Review successfully reinstated",
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/successObject"
+                  "$ref" : "#/components/schemas/review"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Failure: Bad request",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/failure"
                 }
               }
             }
           },
           "401" : {
-            "description" : "unauthorized user",
+            "description" : "Failure: unauthroized user",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -348,12 +434,22 @@
               }
             }
           },
-          "500" : {
-            "description" : "internal server error",
+          "404" : {
+            "description" : "Failure: no content found",
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/internalError"
+                  "$ref" : "#/components/schemas/failure"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Failure: internal server error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/failure"
                 }
               }
             }
@@ -369,7 +465,8 @@
           "name" : "userId",
           "required" : true,
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "format" : "uuid"
           },
           "description" : "passing user id via query string until open api v3.0.3"
         }, {
@@ -377,7 +474,8 @@
           "name" : "reviewId",
           "required" : true,
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "format" : "uuid"
           },
           "description" : "review id to delete"
         } ],
@@ -387,13 +485,23 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/successObject"
+                  "$ref" : "#/components/schemas/success"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Failure: Bad request",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/failure"
                 }
               }
             }
           },
           "401" : {
-            "description" : "unauthorized user",
+            "description" : "Failure: unauthorized user",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -402,12 +510,22 @@
               }
             }
           },
-          "500" : {
-            "description" : "internal server error",
+          "404" : {
+            "description" : "Failure: no content found",
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/internalError"
+                  "$ref" : "#/components/schemas/failure"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Failure: internal server error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/failure"
                 }
               }
             }
@@ -422,10 +540,12 @@
         "type" : "object",
         "properties" : {
           "reviewId" : {
-            "type" : "string"
+            "type" : "string",
+            "format" : "uuid"
           },
           "userId" : {
-            "type" : "string"
+            "type" : "string",
+            "format" : "uuid"
           },
           "author" : {
             "type" : "string"
@@ -525,10 +645,12 @@
         "type" : "object",
         "properties" : {
           "reviewId" : {
-            "type" : "string"
+            "type" : "string",
+            "format" : "uuid"
           },
           "userId" : {
-            "type" : "string"
+            "type" : "string",
+            "format" : "uuid"
           },
           "author" : {
             "type" : "string"
@@ -561,7 +683,8 @@
             "type" : "string"
           },
           "userId" : {
-            "type" : "string"
+            "type" : "string",
+            "format" : "uuid"
           },
           "time" : {
             "type" : "string",
@@ -569,7 +692,7 @@
           }
         }
       },
-      "internalError" : {
+      "failure" : {
         "type" : "object",
         "properties" : {
           "message" : {
@@ -593,7 +716,7 @@
           }
         }
       },
-      "successObject" : {
+      "success" : {
         "type" : "object",
         "properties" : {
           "message" : {
@@ -618,7 +741,8 @@
         "type" : "object",
         "properties" : {
           "userId" : {
-            "type" : "string"
+            "type" : "string",
+            "format" : "uuid"
           },
           "author" : {
             "type" : "string"

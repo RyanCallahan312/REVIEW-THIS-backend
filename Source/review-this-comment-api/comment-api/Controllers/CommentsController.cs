@@ -10,7 +10,7 @@ using review_api.Util;
 
 namespace comment_api.Controllers
 {
-    [Route("api/comments")]
+    [Route("api-v1/comments")]
     [ApiController]
     public class CommentsController : ControllerBase
     {
