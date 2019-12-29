@@ -13,11 +13,11 @@
     }
   },
   "servers" : [ {
-    "description" : "SwaggerHub API Auto Mocking",
-    "url" : "https://virtserver.swaggerhub.com/REVIEW-THIS/review-api/0.2.2"
-  }, {
     "description" : "Local Dev URL",
     "url" : "https://localhost:43080/api-v1"
+  }, {
+    "description" : "SwaggerHub API Auto Mocking",
+    "url" : "https://virtserver.swaggerhub.com/REVIEW-THIS/review-api/0.2.2"
   } ],
   "tags" : [ {
     "name" : "reviews",
@@ -140,6 +140,7 @@
       },
       "post" : {
         "tags" : [ "reviews" ],
+        "operationId" : "postReview",
         "summary" : "Create a new movie review",
         "description" : "creates a new movie review from a specified user",
         "parameters" : [ ],
@@ -220,6 +221,7 @@
     "/reviews/{reviewId}" : {
       "get" : {
         "tags" : [ "reviews by id" ],
+        "operationId" : "getSingleReview",
         "summary" : "gets a complete review object",
         "description" : "returns a complete review specified by the reviewId",
         "parameters" : [ {
@@ -287,6 +289,7 @@
       },
       "put" : {
         "tags" : [ "reviews by id" ],
+        "operationId" : "putReview",
         "summary" : "update a movie reivew",
         "description" : "updates a movie review's sections, rating, and/or headline",
         "parameters" : [ {
@@ -374,6 +377,7 @@
       },
       "patch" : {
         "tags" : [ "reviews by id" ],
+        "operationId" : "patchReview",
         "summary" : "un-delete a movie reivew",
         "description" : "un-deletes a movie review.",
         "parameters" : [ {
@@ -458,6 +462,7 @@
       },
       "delete" : {
         "tags" : [ "reviews by id" ],
+        "operationId" : "deleteReview",
         "summary" : "delete a movie reivew",
         "description" : "deletes a movie review.",
         "parameters" : [ {
@@ -541,30 +546,44 @@
         "properties" : {
           "reviewId" : {
             "type" : "string",
-            "format" : "uuid"
+            "format" : "uuid",
+            "example" : "26a4cf72-29f1-11ea-978f-2e728ce88125"
           },
           "userId" : {
             "type" : "string",
-            "format" : "uuid"
+            "format" : "uuid",
+            "example" : "2d49a532-29f1-11ea-978f-2e728ce88125"
           },
           "author" : {
-            "type" : "string"
+            "type" : "string",
+            "example" : "Review Meister"
           },
           "time" : {
             "type" : "string",
-            "format" : "date-time"
+            "format" : "date-time",
+            "example" : "2020-05-15T13:45:30"
           },
           "movie" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "movie title",
+            "example" : "Stephan kingo numbero 2 part 5"
           },
           "genre" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "movie genre",
+            "example" : "Thriller",
+            "enum" : [ "Action", "Adventure", "Comedy", "Crime", "Documentary", "Drama", "Kids", "Family", "Horror", "Thriller", "Sci-Fi", "Mystery" ]
           },
           "rating" : {
-            "type" : "number"
+            "type" : "number",
+            "format" : "float",
+            "minimum" : 0.0,
+            "maximum" : 10.0,
+            "example" : 7.8
           },
           "headline" : {
-            "type" : "string"
+            "type" : "string",
+            "example" : "Stephen King Kills it again!"
           },
           "sections" : {
             "type" : "array",
@@ -572,13 +591,16 @@
               "type" : "object",
               "properties" : {
                 "header" : {
-                  "type" : "string"
+                  "type" : "string",
+                  "example" : "New Steven King movie is good"
                 },
                 "body" : {
-                  "type" : "string"
+                  "type" : "string",
+                  "example" : "True to the book and larger than life"
                 }
               }
-            }
+            },
+            "uniqueItems" : true
           },
           "modifications" : {
             "type" : "array",
@@ -587,10 +609,12 @@
               "properties" : {
                 "time" : {
                   "type" : "string",
-                  "format" : "date-time"
+                  "format" : "date-time",
+                  "example" : "2020-05-15T13:45:30"
                 },
                 "headline" : {
-                  "type" : "string"
+                  "type" : "string",
+                  "example" : "Stephen King Kills it again!"
                 },
                 "sections" : {
                   "type" : "array",
@@ -598,16 +622,23 @@
                     "type" : "object",
                     "properties" : {
                       "header" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "example" : "New Steven King movie is good"
                       },
                       "body" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "example" : "True to the book and larger than life"
                       }
                     }
-                  }
+                  },
+                  "uniqueItems" : true
                 },
                 "rating" : {
-                  "type" : "number"
+                  "type" : "number",
+                  "format" : "float",
+                  "minimum" : 0.0,
+                  "maximum" : 10.0,
+                  "example" : 7.8
                 }
               }
             }
@@ -618,26 +649,32 @@
               "type" : "object",
               "properties" : {
                 "deleted" : {
-                  "type" : "boolean"
+                  "type" : "boolean",
+                  "example" : false
                 },
-                "user" : {
-                  "type" : "string"
+                "userId" : {
+                  "type" : "string",
+                  "format" : "uuid",
+                  "example" : "2d49a532-29f1-11ea-978f-2e728ce88125"
                 },
                 "time" : {
                   "type" : "string",
-                  "format" : "date-time"
+                  "format" : "date-time",
+                  "example" : "2020-05-15T13:45:30"
                 }
               }
             }
           },
           "deleted" : {
-            "type" : "boolean"
+            "type" : "boolean",
+            "example" : false
           },
           "comments" : {
             "type" : "array",
             "items" : {
               "type" : "string"
-            }
+            },
+            "uniqueItems" : true
           }
         }
       },
@@ -646,30 +683,44 @@
         "properties" : {
           "reviewId" : {
             "type" : "string",
-            "format" : "uuid"
+            "format" : "uuid",
+            "example" : "26a4cf72-29f1-11ea-978f-2e728ce88125"
           },
           "userId" : {
             "type" : "string",
-            "format" : "uuid"
+            "format" : "uuid",
+            "example" : "2d49a532-29f1-11ea-978f-2e728ce88125"
           },
           "author" : {
-            "type" : "string"
+            "type" : "string",
+            "example" : "Review Meister"
           },
           "time" : {
             "type" : "string",
-            "format" : "date-time"
+            "format" : "date-time",
+            "example" : "2020-05-15T13:45:30"
           },
           "movie" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "movie title",
+            "example" : "Stephan kingo numbero 2 part 5"
           },
           "genre" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "movie genre",
+            "example" : "Thriller",
+            "enum" : [ "Action", "Adventure", "Comedy", "Crime", "Documentary", "Drama", "Kids", "Family", "Horror", "Thriller", "Sci-Fi", "Mystery" ]
           },
           "rating" : {
-            "type" : "number"
+            "type" : "number",
+            "format" : "float",
+            "minimum" : 0.0,
+            "maximum" : 10.0,
+            "example" : 7.8
           },
           "headline" : {
-            "type" : "string"
+            "type" : "string",
+            "example" : "Stephen King Kills it again!"
           }
         }
       },
@@ -677,18 +728,22 @@
         "type" : "object",
         "properties" : {
           "message" : {
-            "type" : "string"
+            "type" : "string",
+            "example" : "can not delete review"
           },
           "errorCode" : {
-            "type" : "string"
+            "type" : "string",
+            "example" : "USER_MISMATCH"
           },
           "userId" : {
             "type" : "string",
-            "format" : "uuid"
+            "format" : "uuid",
+            "example" : "2d49a532-29f1-11ea-978f-2e728ce88125"
           },
           "time" : {
             "type" : "string",
-            "format" : "date-time"
+            "format" : "date-time",
+            "example" : "2020-05-15T13:45:30"
           }
         }
       },
@@ -696,23 +751,41 @@
         "type" : "object",
         "properties" : {
           "message" : {
-            "type" : "string"
+            "type" : "string",
+            "example" : "Something went wrong"
           },
           "errorCode" : {
-            "type" : "string"
+            "type" : "string",
+            "example" : "BAD_REQUEST"
           },
           "exception" : {
-            "type" : "string"
+            "type" : "string",
+            "example" : "null pointer"
           },
           "info" : {
             "type" : "array",
             "items" : {
-              "type" : "object"
-            }
+              "anyOf" : [ {
+                "type" : "object",
+                "example" : {
+                  "line" : 10
+                }
+              }, {
+                "type" : "string",
+                "example" : "line 82"
+              } ]
+            },
+            "example" : {
+              "sort" : "sort values",
+              "filter" : "filter values",
+              "page" : "page values"
+            },
+            "uniqueItems" : true
           },
           "time" : {
             "type" : "string",
-            "format" : "date-time"
+            "format" : "date-time",
+            "example" : "2020-05-15T13:45:30"
           }
         }
       },
@@ -720,20 +793,37 @@
         "type" : "object",
         "properties" : {
           "message" : {
-            "type" : "string"
+            "type" : "string",
+            "example" : "all reviews retrieved"
           },
           "successCode" : {
-            "type" : "string"
+            "type" : "string",
+            "example" : "REVIEWS_RETRIVED"
           },
           "info" : {
             "type" : "array",
             "items" : {
-              "type" : "object"
-            }
+              "anyOf" : [ {
+                "type" : "object",
+                "example" : {
+                  "line" : 10
+                }
+              }, {
+                "type" : "string",
+                "example" : "line 82"
+              } ]
+            },
+            "example" : {
+              "sort" : "sort values",
+              "filter" : "filter values",
+              "page" : "page values"
+            },
+            "uniqueItems" : true
           },
           "time" : {
             "type" : "string",
-            "format" : "date-time"
+            "format" : "date-time",
+            "example" : "2020-05-15T13:45:30"
           }
         }
       },
@@ -742,22 +832,39 @@
         "properties" : {
           "userId" : {
             "type" : "string",
-            "format" : "uuid"
+            "format" : "uuid",
+            "example" : "2d49a532-29f1-11ea-978f-2e728ce88125"
           },
           "author" : {
-            "type" : "string"
+            "type" : "string",
+            "example" : "Review Meister"
+          },
+          "time" : {
+            "type" : "string",
+            "format" : "date-time",
+            "example" : "2020-05-15T13:45:30"
           },
           "movie" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "movie title",
+            "example" : "Stephan kingo numbero 2 part 5"
           },
           "genre" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "movie genre",
+            "example" : "Thriller",
+            "enum" : [ "Action", "Adventure", "Comedy", "Crime", "Documentary", "Drama", "Kids", "Family", "Horror", "Thriller", "Sci-Fi", "Mystery" ]
           },
           "rating" : {
-            "type" : "number"
+            "type" : "number",
+            "format" : "float",
+            "minimum" : 0.0,
+            "maximum" : 10.0,
+            "example" : 7.8
           },
           "headline" : {
-            "type" : "string"
+            "type" : "string",
+            "example" : "Stephen King Kills it again!"
           },
           "sections" : {
             "type" : "array",
@@ -765,13 +872,16 @@
               "type" : "object",
               "properties" : {
                 "header" : {
-                  "type" : "string"
+                  "type" : "string",
+                  "example" : "New Steven King movie is good"
                 },
                 "body" : {
-                  "type" : "string"
+                  "type" : "string",
+                  "example" : "True to the book and larger than life"
                 }
               }
-            }
+            },
+            "uniqueItems" : true
           }
         }
       }
