@@ -7,17 +7,17 @@ namespace review_api.Models
     public class Modification 
     {
         [BsonRequired]
-        public DateTime Time { get; set; }
+        public DateTime Time { get;}
         [BsonRequired]
-        public Guid User { get; set; }
+        public Guid User { get;}
         [BsonRequired]
-        public string Headline { get; set; }
+        public string Headline { get;}
         [BsonRequired]
-        public List<Section> Sections { get; set; }
+        public List<Section> Sections { get;}
         [BsonRequired]
-        public float Rating { get; set; }
+        public float Rating { get;}
         [BsonRequired]
-        public List<Guid> Comments { get; set; }
+        public List<Guid> Comments { get;}
 
         public Modification(DateTime time, Guid user, string headline, List<Section> sections, float rating, List<Guid> comments)
         {

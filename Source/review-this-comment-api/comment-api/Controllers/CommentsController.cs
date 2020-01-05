@@ -20,9 +20,9 @@ namespace comment_api.Controllers
         private readonly string SUCCESS_TABLE = "Successes";
         private readonly string UNAUTHORIZED_TABLE = "Unauorized";
 
-        // GET: api/Comments/review
+        // GET: api-v1/comments/by-review/{reviewId}
         // gets all comments for a review
-        [HttpGet("review/{reviewId}")]
+        [HttpGet("by-review/{reviewId}")]
         public ActionResult GetByReview(Guid reviewId, [FromBody] NullableGuidDeserializer nullableUserId = null)
         {
 
@@ -54,10 +54,18 @@ namespace comment_api.Controllers
             return new OkObjectResult(records);
         }
 
-        // GET: api/Comments/5
+        // POST: api-v1/comments/by-review/{reviewId}
+        // create a new comment in on a review
+        [HttpPost("by-review/{reviewId}")]
+        public ActionResult PostOnReview(Guid reviewId, [FromBody] Comment comment)
+        {
+            return Ok();
+        }
+
+        // GET: api-v1/comments/{commentId}
         // get one specific comment on a review
         [HttpGet("{commentId}")]
-        public ActionResult Get(Guid commentId, [FromBody] NullableGuidDeserializer nullableUserId = null)
+        public ActionResult GetByComment(Guid commentId, [FromBody] NullableGuidDeserializer nullableUserId = null)
         {
 
             Guid? userId = nullableUserId.Property;
@@ -87,15 +95,15 @@ namespace comment_api.Controllers
             return new OkObjectResult(record);
         }
 
-        // POST: api/Comments/review
+        // POST: api-v1/comments/{parentId}
         // create a new comment in on a review
-        [HttpPost("review")]
-        public ActionResult Post([FromBody] string value)
+        [HttpPost("{parentId}")]
+        public ActionResult PostOnComment(Guid parentId, [FromBody] Comment comment)
         {
             return Ok();
         }
 
-        // PUT: api/Comments/5
+        // PUT: api-v1/comments/{commentId}
         // edit a comment
         [HttpPut("{commentId}")]
         public ActionResult Put(int id, [FromBody] string value)
@@ -103,7 +111,7 @@ namespace comment_api.Controllers
             return Ok();
         }
 
-        // DELETE: api/ApiWithActions/5
+        // DELETE: api-v1/comments/{commentId}
         // delete a comment off of a review
         [HttpDelete("{commentId}")]
         public ActionResult Delete(int id)
@@ -111,7 +119,7 @@ namespace comment_api.Controllers
             return Ok();
         }
 
-        // PATCH: api/ApiWithActions/5
+        // PATCH: api-v1/comments/{commentId}
         // un-delete a single comment
         [HttpPatch("{commentId}")]
         public ActionResult Patch(int id)

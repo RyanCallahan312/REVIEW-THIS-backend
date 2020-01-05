@@ -17,7 +17,7 @@ namespace comment_api.Models.Response
             ErrorCode = errorCode;
             Exception = exception;
             ExtraValues = extraValues;
-            Time = DateTime.Now;
+            Time = DateTime.UtcNow;
         }
         public Failure(string message, string errorCode, string exception)
         {
@@ -25,7 +25,7 @@ namespace comment_api.Models.Response
             ErrorCode = errorCode;
             Exception = exception;
             ExtraValues = null;
-            Time = DateTime.Now;
+            Time = DateTime.UtcNow;
         }
     }
 }

@@ -15,7 +15,7 @@ namespace comment_api.Models.Response
             Message = message;
             SuccessCode = successCode;
             ExtraValues = extraValues;
-            Time = DateTime.Now;
+            Time = DateTime.UtcNow;
         }
 
         public Success(string message, string successCode)
@@ -23,7 +23,7 @@ namespace comment_api.Models.Response
             Message = message;
             SuccessCode = successCode;
             ExtraValues = null;
-            Time = DateTime.Now;
+            Time = DateTime.UtcNow;
         }
     }
 }

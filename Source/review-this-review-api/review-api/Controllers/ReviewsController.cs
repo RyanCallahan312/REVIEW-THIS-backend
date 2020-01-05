@@ -12,7 +12,7 @@ using review_api.Models.Response;
 namespace review_api.Controllers
 {
 
-    [Route("api-v1/reveiws")]
+    [Route("api-v1/reviews")]
     [ApiController]
     public class ReviewsController : ControllerBase
     {
@@ -24,7 +24,7 @@ namespace review_api.Controllers
 
         // gets a list of partial reviews
         [HttpGet]
-        public ActionResult Get([FromQuery(Name = "sortDirection")] string sortDirection = "asc", [FromQuery(Name = "sortField")] string sortField = "Time", [FromQuery(Name = "filterFields")] string filterFields = null, [FromQuery(Name = "filterValues")] string filterValues = null, [FromQuery(Name = "pageNumber")] int pageNumber = 0, [FromQuery(Name = "pageItems")] int pageItems = 10, [FromBody] NullableGuidDeserializer nullableUserId = null)
+        public IActionResult Get([FromQuery(Name = "sortDirection")] string sortDirection = "asc", [FromQuery(Name = "sortField")] string sortField = "Time", [FromQuery(Name = "filterFields")] string filterFields = null, [FromQuery(Name = "filterValues")] string filterValues = null, [FromQuery(Name = "pageNumber")] int pageNumber = 0, [FromQuery(Name = "pageItems")] int pageItems = 10, [FromBody] NullableGuidDeserializer nullableUserId = null)
         {
             Guid? userId = nullableUserId.Property;
 
@@ -39,7 +39,7 @@ namespace review_api.Controllers
             catch (Exception e)
             {
                 Failure failure = FailureFact.UnevenFilters(e, userId, filterValues, filterFields);
-                db.InsertRecord(FAILURE_TABLE, failure);
+                db.InsertRecordAsync(FAILURE_TABLE, failure);
                 return BadRequest(failure);
             }
 
@@ -51,14 +51,14 @@ namespace review_api.Controllers
             catch (Exception e)
             {
                 Failure failure = FailureFact.Default(e, userId);
-                db.InsertRecord(FAILURE_TABLE, failure);
+                db.InsertRecordAsync(FAILURE_TABLE, failure);
                 return StatusCode(500, failure);
             }
 
             if (records.Count == 0)
             {
                 Failure failure = FailureFact.NoRecordsFound(null, userId, sort, filters, page);
-                db.InsertRecord(FAILURE_TABLE, failure);
+                db.InsertRecordAsync(FAILURE_TABLE, failure);
                 return NotFound(failure);
             }
 
@@ -68,15 +68,15 @@ namespace review_api.Controllers
                 partialRecords.Add(record.ToPartialReview());
             }
 
-            Success success = SuccessFact.ReviewsRetrieved(userId, sort, page, filters);
-            db.InsertRecord(SUCCESS_TABLE, success);
+            Success success = SuccessFact.ReviewsRetrieved(userId, sort, filters, page);
+            db.InsertRecordAsync(SUCCESS_TABLE, success);
 
             return new OkObjectResult(partialRecords);
         }
 
         // get the one full review
         [HttpGet("{reviewId}")]
-        public ActionResult Get(Guid reviewId, [FromBody] NullableGuidDeserializer nullableUserId = null)
+        public IActionResult Get(Guid reviewId, [FromBody] NullableGuidDeserializer nullableUserId = null)
         {
 
             Guid? userId = nullableUserId.Property;
@@ -89,46 +89,46 @@ namespace review_api.Controllers
             catch (Exception e)
             {
                 Failure failure = FailureFact.Default(e, userId);
-                db.InsertRecord(FAILURE_TABLE, failure);
+                db.InsertRecordAsync(FAILURE_TABLE, failure);
                 return StatusCode(500, failure);
             }
 
             if (record == null)
             {
                 Failure failure = FailureFact.IdNotFound(null, userId, reviewId);
-                db.InsertRecord(FAILURE_TABLE, failure);
+                db.InsertRecordAsync(FAILURE_TABLE, failure);
                 return NotFound(failure);
             }
 
             Success success = SuccessFact.ReviewRetrieved(reviewId, userId);
-            db.InsertRecord(SUCCESS_TABLE, success);
+            db.InsertRecordAsync(SUCCESS_TABLE, success);
 
             return new OkObjectResult(record);
         }
 
         // creates a review
         [HttpPost]
-        public ActionResult Post([FromBody] Review value)
+        public IActionResult Post([FromBody] Review review)
         {
             try
             {
-                db.InsertRecord(REVIEW_TABLE, value);
+                db.InsertRecord(REVIEW_TABLE, review);
             }
             catch (Exception e)
             {
-                Failure failure = FailureFact.Default(e, value.UserId);
-                db.InsertRecord(FAILURE_TABLE, failure);
+                Failure failure = FailureFact.Default(e, review.UserId);
+                db.InsertRecordAsync(FAILURE_TABLE, failure);
                 return StatusCode(500, failure);
             }
 
-            Success success = SuccessFact.ReviewCreated(value.ReviewId, value.UserId);
-            db.InsertRecord(SUCCESS_TABLE, success);
-            return new OkObjectResult(success);
+            Success success = SuccessFact.ReviewCreated(review.ReviewId, review.UserId);
+            db.InsertRecordAsync(SUCCESS_TABLE, success);
+            return Created($"https://www.ReviewThis.dev/{GuidToBase64.EncodeBase64String(review.ReviewId)}",success);
         }
 
         // updates sections in a review
         [HttpPut("{reviewId}")]
-        public ActionResult Put(Guid reviewId, [FromBody] JObject value)
+        public IActionResult Put(Guid reviewId, [FromBody] JObject value)
         {
 
             Guid userId;
@@ -139,7 +139,7 @@ namespace review_api.Controllers
             catch (Exception e)
             {
                 Failure failure = FailureFact.BadUserId(e, value["userId"]);
-                db.InsertRecord(FAILURE_TABLE, failure);
+                db.InsertRecordAsync(FAILURE_TABLE, failure);
                 return BadRequest(failure);
             }
 
@@ -159,7 +159,7 @@ namespace review_api.Controllers
             catch (Exception e)
             {
                 Failure failure = FailureFact.BadRequestBody(e, userId, value["sections"]);
-                db.InsertRecord(FAILURE_TABLE, failure);
+                db.InsertRecordAsync(FAILURE_TABLE, failure);
                 return BadRequest(failure);
             }
 
@@ -171,14 +171,14 @@ namespace review_api.Controllers
             catch (Exception e)
             {
                 Failure failure = FailureFact.Default(e, userId);
-                db.InsertRecord(FAILURE_TABLE, failure);
+                db.InsertRecordAsync(FAILURE_TABLE, failure);
                 return StatusCode(500, failure);
             }
 
             if (record == null)
             {
                 Failure failure = FailureFact.IdNotFound(null, userId, reviewId);
-                db.InsertRecord(FAILURE_TABLE, failure);
+                db.InsertRecordAsync(FAILURE_TABLE, failure);
                 return NotFound(failure);
             }
 
@@ -194,25 +194,15 @@ namespace review_api.Controllers
             db.PutRecord(REVIEW_TABLE, value, reviewId);
 
             Success success = SuccessFact.ReviewSectionsModified(reviewId, userId, sections);
-            db.InsertRecord(SUCCESS_TABLE, success);
-            return new OkObjectResult(success);
+            db.InsertRecordAsync(SUCCESS_TABLE, success);
+
+            return NoContent();
         }
 
         // Soft deletes a review
         [HttpDelete("{reviewId}")]
-        public ActionResult Delete(Guid reviewId, [FromBody] JObject value)
+        public IActionResult Delete(Guid reviewId, [FromQuery] Guid userId)
         {
-            Guid userId;
-            try
-            {
-                userId = value["userId"].ToObject<Guid>();
-            }
-            catch (Exception e)
-            {
-                Failure failure = FailureFact.BadUserId(e, null);
-                db.InsertRecord(FAILURE_TABLE, failure);
-                return BadRequest(failure);
-            }
 
             Review record;
             try
@@ -222,14 +212,14 @@ namespace review_api.Controllers
             catch (Exception e)
             {
                 Failure failure = FailureFact.BadUserId(e, null);
-                db.InsertRecord(FAILURE_TABLE, failure);
+                db.InsertRecordAsync(FAILURE_TABLE, failure);
                 return BadRequest(failure);
             }
 
             if (record == null)
             {
                 Failure failure = FailureFact.IdNotFound(null, userId, reviewId);
-                db.InsertRecord(FAILURE_TABLE, failure);
+                db.InsertRecordAsync(FAILURE_TABLE, failure);
                 return NotFound(failure);
             }
             else
@@ -239,25 +229,15 @@ namespace review_api.Controllers
             }
 
             Success success = SuccessFact.ReviewSoftDelete(reviewId, userId);
-            db.InsertRecord(SUCCESS_TABLE, success);
-            return new OkObjectResult(success);
+            db.InsertRecordAsync(SUCCESS_TABLE, success);
+
+            return NoContent();
         }
 
         //Un-deletes a soft deleted review
         [HttpPatch("{reviewId}")]
-        public ActionResult Patch(Guid reviewId, [FromBody] JObject value)
+        public IActionResult Patch(Guid reviewId, [FromQuery] Guid userId)
         {
-            Guid userId;
-            try
-            {
-                userId = value["userId"].ToObject<Guid>();
-            }
-            catch (Exception e)
-            {
-                Failure failure = FailureFact.BadUserId(e, null);
-                db.InsertRecord(FAILURE_TABLE, failure);
-                return BadRequest(failure);
-            }
 
             Review record;
             try
@@ -267,14 +247,14 @@ namespace review_api.Controllers
             catch (Exception e)
             {
                 Failure failure = FailureFact.Default(e, userId);
-                db.InsertRecord(FAILURE_TABLE, failure);
+                db.InsertRecordAsync(FAILURE_TABLE, failure);
                 return StatusCode(500, failure);
             }
 
             if (record == null)
             {
                 Failure failure = FailureFact.IdNotFound(null, userId, reviewId);
-                db.InsertRecord(FAILURE_TABLE, failure);
+                db.InsertRecordAsync(FAILURE_TABLE, failure);
                 return NotFound(failure);
             }
             else
@@ -284,8 +264,9 @@ namespace review_api.Controllers
             }
 
             Success success = SuccessFact.ReviewReinstated(reviewId, userId);
-            db.InsertRecord(SUCCESS_TABLE, success);
-            return new OkObjectResult(success);
+            db.InsertRecordAsync(SUCCESS_TABLE, success);
+
+            return NoContent();
         }
     }
 }

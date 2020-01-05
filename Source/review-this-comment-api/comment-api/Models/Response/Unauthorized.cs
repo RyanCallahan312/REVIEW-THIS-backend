@@ -14,7 +14,7 @@ namespace comment_api.Models.Response
             Message = message;
             ErrorCode = errorCode;
             UserId = userId;
-            Time = DateTime.Now;
+            Time = DateTime.UtcNow;
         }
 
         public Unauthorized(string message, string errorCode)
@@ -22,7 +22,7 @@ namespace comment_api.Models.Response
             Message = message;
             ErrorCode = errorCode;
             UserId = null;
-            Time = DateTime.Now;
+            Time = DateTime.UtcNow;
         }
     }
 }

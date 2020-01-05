@@ -20,20 +20,21 @@ namespace review_api.Models
         [BsonRequired]
         public string Genre { get; }
         [BsonRequired]
-        public float Rating { get; set; }
+        public float Rating { get; private set; }
         [BsonRequired]
-        public string Headline { get; set; }
+        public string Headline { get; private set; }
         [BsonRequired]
-        public List<Section> Sections { get; set; }
+        public List<Section> Sections { get; private set; }
         [BsonRequired]
-        public List<Modification> Modifications { get; set; }
+        public List<Modification> Modifications { get; private set; }
         [BsonRequired]
-        public List<Deletion> Deletions { get; set; }
+        public List<Deletion> Deletions { get; private set; }
         [BsonRequired]
-        public bool Deleted { get; set; }
+        public bool Deleted { get; private set; }
         [BsonRequired]
-        public List<Guid> Comments { get; set; }
+        public List<Guid> Comments { get; private set; }
 
+        [BsonConstructor]
         public Review(Guid reviewId, Guid userId, string author, DateTime time, string movie, string genre, float rating, string headline, List<Section> sections, List<Modification> modifications, List<Deletion> deletions, bool deleted, List<Guid> comments)
         {
             ReviewId = reviewId;
@@ -57,7 +58,7 @@ namespace review_api.Models
             ReviewId = Guid.NewGuid();
             UserId = userId;
             Author = "Temp user because auth and users aren't set up yet";
-            Time = DateTime.Now;
+            Time = DateTime.UtcNow;
             Movie = movie;
             Genre = genre;
             Rating = rating;
@@ -65,47 +66,47 @@ namespace review_api.Models
             Sections = sections;
             Deletions = new List<Deletion>()
             {
-                new Deletion(false, userId, DateTime.Now)
+                new Deletion(false, userId, DateTime.UtcNow)
             };
             Deleted = false;
             Comments = new List<Guid>();
-            Modifications = new List<Modification> { new Modification(DateTime.Now, userId, Headline, Sections, Rating, Comments) };
+            Modifications = new List<Modification> { new Modification(DateTime.UtcNow, userId, Headline, Sections, Rating, Comments) };
 
         }
 
         public void Delete(Guid userId)
         {
-            Deletions.Add(new Deletion(true, userId, DateTime.Now));
+            Deletions.Add(new Deletion(true, userId, DateTime.UtcNow));
             Deleted = true;
         }
 
         public void ReInstate(Guid userId)
         {
-            Deletions.Add(new Deletion(false, userId, DateTime.Now));
+            Deletions.Add(new Deletion(false, userId, DateTime.UtcNow));
             Deleted = false;
         }
 
         public void SetRating(float value, Guid userId)
         {
-            Modifications.Add(new Modification(DateTime.Now, userId, Headline, Sections, Rating, Comments));
+            Modifications.Add(new Modification(DateTime.UtcNow, userId, Headline, Sections, Rating, Comments));
             Rating = value;
         }
 
         public void SetHeadline(string value, Guid userId)
         {
-            Modifications.Add(new Modification(DateTime.Now, userId, Headline, Sections, Rating, Comments));
+            Modifications.Add(new Modification(DateTime.UtcNow, userId, Headline, Sections, Rating, Comments));
             Headline = value;
         }
 
         public void SetSection(List<Section> value, Guid userId)
         {
-            Modifications.Add(new Modification(DateTime.Now, userId, Headline, Sections, Rating, Comments));
+            Modifications.Add(new Modification(DateTime.UtcNow, userId, Headline, Sections, Rating, Comments));
             Sections = value;
         }
 
         public void SetComments(List<Guid> value, Guid userId)
         {
-            Modifications.Add(new Modification(DateTime.Now, userId, Headline, Sections, Rating, Comments));
+            Modifications.Add(new Modification(DateTime.UtcNow, userId, Headline, Sections, Rating, Comments));
             Comments = value;
         }
 

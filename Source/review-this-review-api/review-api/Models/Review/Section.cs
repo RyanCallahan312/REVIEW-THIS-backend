@@ -5,9 +5,9 @@ namespace review_api.Models
     public class Section
     {
         [BsonRequired]
-        public string Header { get; set; }
+        public string Header { get;}
         [BsonRequired]
-        public string Body { get; set; }
+        public string Body { get;}
 
         public Section(string header, string body)
         {

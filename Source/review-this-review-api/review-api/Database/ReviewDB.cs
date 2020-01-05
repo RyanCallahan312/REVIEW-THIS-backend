@@ -22,6 +22,12 @@ namespace review_api.Database
             collection.InsertOne(record);
         }
 
+        public void InsertRecordAsync<T>(string table, T record)
+        {
+            var collection = db.GetCollection<T>(table);
+            collection.InsertOneAsync(record);
+        }
+
         public void PutRecord<T>(string table, T record, Guid id)
         {
             var collection = db.GetCollection<T>(table);

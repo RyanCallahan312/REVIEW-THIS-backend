@@ -42,7 +42,7 @@ namespace comment_api.Models
             CommentId = Guid.NewGuid();
             UserId = userId;
             ParentId = parentId;
-            Time = DateTime.Now;
+            Time = DateTime.UtcNow;
             Modifications = new List<Modification>();
             Deleted = false;
             Deletions = new List<Deletion>();
@@ -52,13 +52,13 @@ namespace comment_api.Models
         public void Delete(Guid userId)
         {
             Deleted = true;
-            Deletions.Add(new Deletion(userId, Deleted, DateTime.Now));
+            Deletions.Add(new Deletion(userId, Deleted, DateTime.UtcNow));
         }
 
         public void Reinstate(Guid userId)
         {
             Deleted = false;
-            Deletions.Add(new Deletion(userId, Deleted, DateTime.Now));
+            Deletions.Add(new Deletion(userId, Deleted, DateTime.UtcNow));
         }
 
         public void SetBody(string body, Guid userId)
