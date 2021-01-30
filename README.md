@@ -7,3 +7,5 @@ trello board for tasks https://trello.com/b/avShMdIW/review-this
 
 ### Project Update
 10/9/2020 Hope to resume work on this soon. Currently working on [Losing The Lyrics](https://www.devryan.io/) because I feel as if that project can provide more value to myself as a developer.
+
+1/29/2021  This is essentially a dead project, but it helped me learn what not to do when developing for asp.net 😅
